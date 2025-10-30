@@ -89,7 +89,9 @@ production:
     <<: *default
     database: chickenberryhill_farm_production
     username: chickenberryhill_farm
-    password: <%= ENV["CHICKENBERRYHILL_FARM_DATABASE_PASSWORD"] %>
+    password: <%= ENV["POSTGRES_PASSWORD"] %>
+    host: <%= ENV["DB_HOST"] %>
+    port: <%= ENV["DATABASE_PORT"] %>
   cache:
     <<: *primary_production
     database: chickenberryhill_farm_production_cache

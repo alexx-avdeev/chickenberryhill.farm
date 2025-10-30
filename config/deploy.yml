@@ -2,12 +2,12 @@
 service: chickenberryhill_farm
 
 # Name of the container image (use your-user/app-name on external registries).
-image: chickenberryhill_farm
+image: alexavdeev/chickenberryhill_farm
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - www.chickenberryhill.farm
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -20,26 +20,27 @@ servers:
 #
 # Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: app.example.com
 
 # Where you keep your container images.
 registry:
   # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
+  server: docker.io
 
   # Needed for authenticated registries.
-  # username: your-user
+  username: alexavdeev
 
   # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - POSTGRES_PASSWORD
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -53,7 +54,10 @@ env:
 
     # Match this to any external database server to configure Active Record correctly
     # Use chickenberryhill_farm-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
+    DB_HOST: chickenberryhill_farm-db
+    POSTGRES_USER: chickenberryhill_farm  # Matches your Rails DB user (snake_case)
+    POSTGRES_DB: chickenberryhill_farm_production  # Your production DB name
+    DATABASE_PORT: 5432
 
     # Log everything from Rails
     # RAILS_LOG_LEVEL: debug
@@ -86,32 +90,32 @@ builder:
   #
   # # Pass arguments and secrets to the Docker build process
   # args:
-  #   RUBY_VERSION: 3.4.5
+  #   RUBY_VERSION: 3.4.7
   # secrets:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+ssh:
+  user: axel
 
 # Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
+accessories:
+  db:
+    image: postgres:16
+    host: www.chickenberryhill.farm
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: chickenberryhill_farm
+        POSTGRES_DB: chickenberryhill_farm_production
+      secret:
+        - POSTGRES_PASSWORD
+    files:
+      - config/mysql/production.cnf:/etc/mysql/my.cnf
+      - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+    directories:
+      - db-data:/var/lib/postgresql/data
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2

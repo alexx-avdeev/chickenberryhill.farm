@@ -4,6 +4,9 @@
 # belong in git's global ignore instead:
 # `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
 
+# Ignore ideas folder from JetBrains IDEs.
+/.idea
+
 # Ignore bundler config.
 /.bundle
 

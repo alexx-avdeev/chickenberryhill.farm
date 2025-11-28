@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_21_021512) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_190200) do
+  create_table "animals", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "date_of_birth"
+    t.boolean "date_of_birth_is_approximate", default: false, null: false
+    t.datetime "date_of_death"
+    t.integer "death_reason"
+    t.string "name"
+    t.string "tag"
+    t.datetime "updated_at", null: false
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"

@@ -1,0 +1,157 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Photo from "../components/Photo.astro";
+import { values } from "../data/site";
+---
+
+<BaseLayout
+  title="About"
+  description="ChickenBerry Hill is a small, hands-on family farm outside Hartsville, Tennessee — goats, sheep, rabbits, quail, geese, and chickens raised on pasture."
+>
+  <!-- HEADER -->
+  <section class="shell shell--prose page-head center">
+    <p class="eyebrow float-up">Our story</p>
+    <h1 class="display-lg measure-16 float-up-1">
+      A family, a hill, and a lot of animals.
+    </h1>
+  </section>
+
+  <!-- LEAD IMAGE -->
+  <section class="shell lead">
+    <Photo
+      label="Drop a photo of your family / farm"
+      aspect="16 / 9"
+      maxHeight="520px"
+      eager
+    />
+  </section>
+
+  <!-- STORY BODY -->
+  <section class="shell shell--narrow story">
+    <p class="story__opener">
+      It started with a few chickens and a promise to ourselves: to raise food
+      we'd be proud to feed our own family.
+    </p>
+    <p>
+      Tucked into the rolling countryside outside Hartsville, Tennessee,
+      ChickenBerry Hill is a small, hands-on farm. What began as a backyard
+      flock has grown, season by season, into a working homestead — goats and
+      sheep grazing the pasture, rabbits and quail in tidy hutches, geese
+      keeping watch, and chickens doing what chickens do best.
+    </p>
+    <p>
+      We do things the slow way on purpose. Our animals live on open ground and
+      clean air, with room to be themselves. We know them by name and by
+      temperament. That care is the whole point — and you can taste it in
+      everything we sell.
+    </p>
+    <p>
+      When you buy from us, you're not buying from a label. You're buying from
+      neighbors who did the chores this morning and will do them again tonight.
+    </p>
+  </section>
+
+  <!-- VALUES -->
+  <section class="band values-band">
+    <div class="shell values">
+      {
+        values.map((value) => (
+          <div>
+            <div class="values__num" aria-hidden="true">
+              <span>{value.num}</span>
+            </div>
+            <h2 class="display-sm values__title">{value.title}</h2>
+            <p class="values__body">{value.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="shell shell--prose outro center">
+    <h2 class="display-md measure-16">Want to taste the difference?</h2>
+    <div class="btn-row outro__row">
+      <a href="/products/" class="btn btn--primary">Shop the farm</a>
+      <a href="/contact/" class="btn btn--outline">Say hello →</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: 96px 56px;
+  }
+
+  .lead {
+    margin-bottom: 72px;
+  }
+
+  .story {
+    padding-bottom: 40px;
+  }
+
+  .story p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    margin: 0 0 22px;
+  }
+
+  .story p:last-child {
+    margin-bottom: 0;
+  }
+
+  .story__opener {
+    font-family: var(--font-display);
+    font-size: clamp(21px, 2.4vw, 26px) !important;
+    line-height: 1.5 !important;
+    color: var(--ink-body) !important;
+    margin-bottom: 32px !important;
+  }
+
+  .values-band {
+    margin-top: 64px;
+  }
+
+  .values {
+    padding-block: 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 40px;
+  }
+
+  .values__num {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green);
+    margin-bottom: 18px;
+    font-family: var(--font-display);
+    font-size: 22px;
+  }
+
+  .values__title {
+    margin: 0 0 10px;
+  }
+
+  .values__body {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .outro {
+    padding-block: 88px;
+  }
+
+  .outro__row {
+    margin-top: 30px;
+  }
+</style>

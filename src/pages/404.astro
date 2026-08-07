@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Page not found" description="That page isn't on the hill.">
+  <section class="shell shell--prose notfound center">
+    <p class="eyebrow">404</p>
+    <h1 class="display-md measure-16">That page wandered off.</h1>
+    <p class="notfound__body">
+      It happens around here. Try the farm stand or head back to the beginning.
+    </p>
+    <div class="btn-row">
+      <a href="/products/" class="btn btn--primary">Shop the farm</a>
+      <a href="/" class="btn btn--outline">Back home →</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    padding-block: 120px 140px;
+  }
+
+  .notfound__body {
+    margin: 20px auto 0;
+    max-width: 44ch;
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+</style>

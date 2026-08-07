@@ -1,0 +1,67 @@
+---
+import Logo from "./Logo.astro";
+import InstagramIcon from "./InstagramIcon.astro";
+import { site } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__row shell">
+    <Logo size="sm" />
+    <p class="footer__location">{site.location}</p>
+    <a
+      href={site.instagram}
+      class="footer__social"
+      rel="me noopener noreferrer"
+      target="_blank"
+    >
+      <InstagramIcon size={18} />
+      Instagram
+    </a>
+  </div>
+  <div class="footer__legal shell">
+    <p>
+      © {year} {site.name}. Family raised in {site.region}.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+  }
+
+  .footer__row {
+    padding-block: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer__location {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-softer);
+  }
+
+  .footer__social {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .footer__legal {
+    padding-bottom: 40px;
+  }
+
+  .footer__legal p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+</style>

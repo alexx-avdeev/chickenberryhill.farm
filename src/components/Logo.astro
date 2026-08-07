@@ -1,0 +1,61 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  /** Footer uses a slightly smaller mark than the nav. */
+  size?: "sm" | "md";
+}
+
+const { size = "md" } = Astro.props;
+---
+
+<span class:list={["logo", `logo--${size}`]}>
+  <span class="logo__mark" aria-hidden="true">C</span>
+  <span class="logo__word">{site.name}</span>
+</span>
+
+<style>
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--ink);
+  }
+
+  .logo__mark {
+    border-radius: 50%;
+    background: var(--berry);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-on-dark);
+    font-family: var(--font-display);
+    font-weight: 500;
+    flex: none;
+  }
+
+  .logo__word {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  .logo--md .logo__mark {
+    width: 26px;
+    height: 26px;
+    font-size: 15px;
+  }
+
+  .logo--md .logo__word {
+    font-size: 18px;
+  }
+
+  .logo--sm .logo__mark {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .logo--sm .logo__word {
+    font-size: 16px;
+  }
+</style>

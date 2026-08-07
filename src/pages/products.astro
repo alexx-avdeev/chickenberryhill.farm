@@ -1,0 +1,191 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Photo from "../components/Photo.astro";
+import { products, orderMailto, reserveMailto } from "../data/site";
+---
+
+<BaseLayout
+  title="Products"
+  description="Pasture-raised chicken, grass-fed lamb, and fresh quail eggs from ChickenBerry Hill Farm in Hartsville, Tennessee."
+>
+  <!-- HEADER -->
+  <section class="shell shell--prose page-head center">
+    <p class="eyebrow float-up">The farm stand</p>
+    <h1 class="display-lg measure-14 float-up-1">What's for sale</h1>
+    <p class="page-head__lede float-up-2">
+      Everything here comes from our own animals. Availability shifts with the
+      seasons — reserve what you'd like and we'll be in touch.
+    </p>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="shell catalog">
+    <ul class="catalog__grid">
+      {
+        products.map((product) => (
+          <li class="card">
+            <Photo
+              src={product.image}
+              alt={product.name}
+              label={product.name}
+              aspect="4 / 3"
+              radius="0"
+            >
+              <span class:list={["card__tag", `card__tag--${product.tagTone}`]}>
+                {product.tag}
+              </span>
+            </Photo>
+            <div class="card__body">
+              <h2 class="card__name">{product.name}</h2>
+              <p class="card__desc">{product.description}</p>
+              <div class="card__foot">
+                <span class="card__price">{product.price}</span>
+                <a
+                  href={reserveMailto(product.name)}
+                  class="btn btn--primary btn--small"
+                >
+                  Reserve
+                </a>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- NOTE -->
+  <section class="shell shell--prose note-wrap">
+    <div class="note">
+      <p>
+        Not sure what's in stock right now? Seasonal items like chicken and lamb
+        are raised in batches. Send us a note and we'll tell you exactly what's
+        available and when.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="shell shell--prose outro center">
+    <a href={orderMailto} class="btn btn--dark">Place an order</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-block: 96px 56px;
+  }
+
+  .page-head__lede {
+    margin: 26px auto 0;
+    max-width: 50ch;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .catalog {
+    padding-block: 16px 40px;
+  }
+
+  .catalog__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px;
+  }
+
+  .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card__tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: oklch(0.99 0.006 95 / 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+  }
+
+  .card__tag--green {
+    color: var(--green);
+  }
+
+  .card__tag--berry {
+    color: var(--berry);
+  }
+
+  .card__body {
+    padding: 26px 26px 28px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 26px;
+    color: var(--ink);
+  }
+
+  .card__desc {
+    margin: 10px 0 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    flex: 1;
+  }
+
+  .card__foot {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .card__price {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-body);
+  }
+
+  .note-wrap {
+    padding-block: 56px 40px;
+  }
+
+  .note {
+    border: 1px dashed var(--border-dashed);
+    border-radius: var(--radius-md);
+    padding: 32px 36px;
+    text-align: center;
+    background: var(--surface-tint);
+  }
+
+  .note p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: oklch(0.42 0.015 60);
+  }
+
+  .outro {
+    padding-block: 40px 96px;
+  }
+</style>

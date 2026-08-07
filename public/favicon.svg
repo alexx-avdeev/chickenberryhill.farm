@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <circle cx="16" cy="16" r="16" fill="oklch(0.55 0.15 25)" />
+  <text
+    x="16"
+    y="17"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="Newsreader, Georgia, serif"
+    font-size="19"
+    fill="oklch(0.99 0.006 95)"
+  >C</text>
+</svg>

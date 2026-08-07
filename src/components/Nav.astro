@@ -1,0 +1,204 @@
+---
+import Logo from "./Logo.astro";
+import { navLinks } from "../data/site";
+
+// Normalise so "/about" and "/about/" both match.
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
+
+// The design swaps the nav CTA on the Products page: everywhere else it points
+// at the shop, but from the shop it points at ordering.
+const onProducts = isActive("/products/");
+const cta = onProducts
+  ? { label: "Order", href: "/contact/" }
+  : { label: "Shop", href: "/products/" };
+---
+
+<header class="nav">
+  <nav class="nav__inner" aria-label="Main">
+    <a href="/" class="nav__brand">
+      <Logo />
+    </a>
+
+    <button
+      type="button"
+      class="nav__toggle"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      data-nav-toggle
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M3 6h18M3 12h18M3 18h18"></path>
+      </svg>
+    </button>
+
+    <div class="nav__links" id="nav-links" data-nav-links>
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={["nav__link", { "is-active": isActive(link.href) }]}
+            aria-current={isActive(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a href={cta.href} class="nav__cta">{cta.label}</a>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: oklch(0.99 0.006 95 / 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav__inner {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .nav__brand {
+    color: var(--ink);
+  }
+
+  .nav__toggle {
+    display: none;
+    background: none;
+    border: none;
+    padding: 8px;
+    margin: -8px;
+    cursor: pointer;
+    color: var(--ink);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .nav__link {
+    color: var(--ink-softer);
+    transition: color 0.15s ease;
+  }
+
+  .nav__link:hover,
+  .nav__link.is-active {
+    color: var(--ink);
+  }
+
+  .nav__cta {
+    background: var(--surface-dark);
+    color: var(--ink-on-dark);
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    transition: background-color 0.15s ease;
+  }
+
+  .nav__cta:hover {
+    background: var(--surface-dark-hover);
+    color: var(--ink-on-dark);
+  }
+
+  @media (max-width: 720px) {
+    .nav__inner {
+      padding: 0 var(--gutter-mobile);
+    }
+
+    .nav__toggle {
+      display: inline-flex;
+    }
+
+    .nav__links {
+      display: none;
+      position: absolute;
+      top: var(--nav-height);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      background: oklch(0.99 0.006 95 / 0.98);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px var(--gutter-mobile) 20px;
+    }
+
+    .nav__links.is-open {
+      display: flex;
+    }
+
+    .nav__links a {
+      padding: 13px 8px;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    .nav__cta {
+      text-align: center;
+      margin-top: 6px;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const links = document.querySelector<HTMLElement>("[data-nav-links]");
+
+  if (toggle && links) {
+    const setOpen = (open: boolean) => {
+      links.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+    };
+
+    toggle.addEventListener("click", () => {
+      setOpen(!links.classList.contains("is-open"));
+    });
+
+    // Navigating within the menu should close it, and so should Escape.
+    links.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && links.classList.contains("is-open")) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Reset state if the viewport grows past the mobile breakpoint while open.
+    window.matchMedia("(min-width: 721px)").addEventListener("change", (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+</script>

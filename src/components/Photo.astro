@@ -1,0 +1,91 @@
+---
+/**
+ * The Astro stand-in for the design's <image-slot>.
+ *
+ * With a `src` it renders the photo; without one it renders a labelled well so
+ * the layout still reads correctly and it's obvious which picture is missing.
+ * Drop files into `public/images/` and set `image` in `src/data/site.ts`.
+ */
+
+interface Props {
+  src?: string | null;
+  alt?: string;
+  /** Shown in the empty state — say what photo belongs here. */
+  label: string;
+  /** CSS aspect-ratio for the frame, e.g. "4 / 3". Ignored when `height` is set. */
+  aspect?: string;
+  /** Fixed height instead of an aspect ratio (used by the home hero). */
+  height?: string;
+  maxHeight?: string;
+  radius?: string;
+  /** First image on the page shouldn't be lazy-loaded. */
+  eager?: boolean;
+}
+
+const {
+  src = null,
+  alt = "",
+  label,
+  aspect = "4 / 3",
+  height,
+  maxHeight,
+  radius = "var(--radius-xl)",
+  eager = false,
+} = Astro.props;
+
+const frameStyle = [
+  height ? `height:${height}` : `aspect-ratio:${aspect}`,
+  maxHeight ? `max-height:${maxHeight}` : null,
+  `border-radius:${radius}`,
+]
+  .filter(Boolean)
+  .join(";");
+---
+
+<div class="photo" style={frameStyle}>
+  {
+    src ? (
+      <img
+        src={src}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        decoding={eager ? "sync" : "async"}
+        fetchpriority={eager ? "high" : "auto"}
+      />
+    ) : (
+      <span class="photo__empty">{label}</span>
+    )
+  }
+  <slot />
+</div>
+
+<style>
+  .photo {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: var(--surface-placeholder);
+  }
+
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink-faint);
+    border: 1px dashed var(--border-dashed);
+    border-radius: inherit;
+  }
+</style>

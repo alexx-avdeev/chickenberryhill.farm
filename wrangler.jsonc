@@ -3,10 +3,26 @@
   "name": "chickenberryhill-farm",
   "compatibility_date": "2026-08-06",
 
-  // No "main" entry: this is an assets-only Worker. Cloudflare serves the
-  // static build directly, with no Worker script in front of it.
+  // The site is static; the Worker exists only to do the www → apex redirect
+  // (see worker/index.ts). `run_worker_first` is required for that — without
+  // it the asset layer answers matching paths directly and the script never
+  // runs. Everything that isn't a redirect goes straight back to ASSETS.
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "404-page"
-  }
+  },
+
+  // Both hostnames are attached to the Worker: the apex is canonical (see
+  // `site` in astro.config.mjs) and www reaches the Worker so it can be
+  // redirected.
+  //
+  // `custom_domain: true` makes Cloudflare create/manage the DNS record on
+  // deploy, so the zone must already be on this Cloudflare account.
+  "routes": [
+    { "pattern": "chickenberryhill.farm", "custom_domain": true },
+    { "pattern": "www.chickenberryhill.farm", "custom_domain": true }
+  ]
 }

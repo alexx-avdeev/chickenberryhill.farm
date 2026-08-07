@@ -1,9 +1,9 @@
 /**
  * Single source of truth for site copy and content.
  *
- * TODO(axel): `email` and `instagram` are placeholders — swap in the real
- * addresses. Every "order" / "reserve" button on the site is a mailto: built
- * from `email`, so getting it right matters.
+ * TODO(axel): `email` is still a placeholder — swap in the real address. Every
+ * "order" / "reserve" button on the site is a mailto: built from `email`, so
+ * getting it right matters.
  */
 
 export const site = {
@@ -12,8 +12,8 @@ export const site = {
   location: "Hartsville, Tennessee",
   region: "Middle Tennessee",
   email: "hello@chickenberryhill.farm",
-  instagram: "https://instagram.com/chickenberryhill",
-  instagramHandle: "@chickenberryhill",
+  instagram: "https://www.instagram.com/chickenberry_hill_farm",
+  instagramHandle: "@chickenberry_hill_farm",
   description:
     "A small family farm in Hartsville, Tennessee raising goats, sheep, rabbits, geese, chicken, and quail — selling pasture chicken, lamb, and quail eggs to our neighbors.",
 } as const;

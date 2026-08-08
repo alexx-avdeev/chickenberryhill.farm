@@ -140,60 +140,47 @@ select {
   view-transition-name: site-footer;
 }
 
-/* Swipe navigation (see SwipeNavigation.astro) tags the transition with a
-   direction so the page slides the way the finger went, instead of the default
-   cross-fade. Only the root group slides — the named header and footer are
-   excluded from it, so the chrome stays put while the content moves under it.
-   Browsers without view-transition types simply keep the cross-fade. */
-
-@keyframes vt-slide-out-left {
-  to {
-    transform: translateX(-22%);
-    opacity: 0;
-  }
-}
-
-@keyframes vt-slide-in-right {
-  from {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes vt-slide-out-right {
-  to {
-    transform: translateX(22%);
-    opacity: 0;
-  }
-}
-
-@keyframes vt-slide-in-left {
-  from {
-    transform: translateX(-100%);
-  }
-}
-
-html:active-view-transition-type(swipe-forward)::view-transition-old(root) {
-  animation: vt-slide-out-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-html:active-view-transition-type(swipe-forward)::view-transition-new(root) {
-  animation: vt-slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-html:active-view-transition-type(swipe-back)::view-transition-old(root) {
-  animation: vt-slide-out-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-html:active-view-transition-type(swipe-back)::view-transition-new(root) {
-  animation: vt-slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Swipe paging (see SwipeNavigation.astro)
+
+   `.swipe-panel` holds the incoming page during a drag. It sits under the
+   sticky header, covering the viewport, and is moved in from whichever side
+   the finger came from. Only the content moves — the header and footer stay
+   where they are.
+   -------------------------------------------------------------------------- */
+
+.swipe-panel {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  overflow: hidden;
+  background: var(--bg);
+  will-change: transform;
+  /* The neighbour is a preview: it must not swallow taps mid-drag. */
+  pointer-events: none;
+}
+
+/* Clip the outgoing page while it's translated off-screen, so dragging never
+   produces a horizontal scrollbar or lets the body pan sideways. */
+html.is-swiping,
+html.is-swiping body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+html.is-swiping main {
+  will-change: transform;
 }
 
 /* --------------------------------------------------------------------------

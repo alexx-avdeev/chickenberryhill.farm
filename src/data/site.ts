@@ -1,9 +1,8 @@
 /**
  * Single source of truth for site copy and content.
  *
- * TODO(axel): `email` is still a placeholder — swap in the real address. Every
- * "order" / "reserve" button on the site is a mailto: built from `email`, so
- * getting it right matters.
+ * Every "order" / "reserve" button on the site is a mailto: built from
+ * `email`, so it has to stay a real, monitored address.
  */
 
 export const site = {
@@ -11,7 +10,7 @@ export const site = {
   shortName: "ChickenBerry Hill",
   location: "Hartsville, Tennessee",
   region: "Middle Tennessee",
-  email: "hello@chickenberryhill.farm",
+  email: "contact@chickenberryhill.farm",
   instagram: "https://www.instagram.com/chickenberry_hill_farm",
   instagramHandle: "@chickenberry_hill_farm",
   description:

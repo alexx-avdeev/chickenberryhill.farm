@@ -106,7 +106,7 @@ and point `main` at the generated Worker entry.
 
 ## Before launch
 
-- [ ] Set the real address in `site.email` (`src/data/site.ts`) — every order
-      and reserve button is a `mailto:` built from it.
+- [ ] Confirm `contact@chickenberryhill.farm` actually receives mail — every
+      order and reserve button is a `mailto:` built from `site.email`.
 - [ ] Add photos to `public/images/` and wire them up.
 - [ ] Add an OG share image and reference it from `BaseLayout.astro`.

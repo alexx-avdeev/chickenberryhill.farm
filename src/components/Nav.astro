@@ -5,13 +5,6 @@ import { navLinks } from "../data/site";
 // Normalise so "/about" and "/about/" both match.
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
-
-// The design swaps the nav CTA on the Products page: everywhere else it points
-// at the shop, but from the shop it points at ordering.
-const onProducts = isActive("/products/");
-const cta = onProducts
-  ? { label: "Order", href: "/contact/" }
-  : { label: "Shop", href: "/products/" };
 ---
 
 <header class="nav">
@@ -54,7 +47,7 @@ const cta = onProducts
           </a>
         ))
       }
-      <a href={cta.href} class="nav__cta">{cta.label}</a>
+      <a href="/products/" class="nav__cta">Shop</a>
     </div>
   </nav>
 </header>

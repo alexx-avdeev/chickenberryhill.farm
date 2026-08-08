@@ -111,6 +111,44 @@ select {
 }
 
 /* --------------------------------------------------------------------------
+   Cross-document view transitions
+
+   This is a multi-page site, so without this every navigation tears down the
+   document and repaints it — the header visibly flashes, most noticeably the
+   dark Shop pill against the cream background.
+
+   `navigation: auto` makes same-origin navigations transition instead of hard
+   cutting. The header and footer get their own transition names so the
+   browser treats each as one continuous element across the two documents
+   rather than folding them into the page-wide cross-fade; because their
+   snapshots are identical either side of a navigation, they simply hold still.
+
+   Not Baseline: Chrome and Safari honour it, Firefox ignores the at-rule
+   entirely (no error) and keeps the previous behaviour.
+   -------------------------------------------------------------------------- */
+
+@view-transition {
+  navigation: auto;
+}
+
+/* Only the page content should cross-fade; the chrome around it stays put. */
+.nav {
+  view-transition-name: site-nav;
+}
+
+.footer {
+  view-transition-name: site-footer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
    Layout primitives
    -------------------------------------------------------------------------- */
 

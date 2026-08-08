@@ -140,6 +140,54 @@ select {
   view-transition-name: site-footer;
 }
 
+/* Swipe navigation (see SwipeNavigation.astro) tags the transition with a
+   direction so the page slides the way the finger went, instead of the default
+   cross-fade. Only the root group slides — the named header and footer are
+   excluded from it, so the chrome stays put while the content moves under it.
+   Browsers without view-transition types simply keep the cross-fade. */
+
+@keyframes vt-slide-out-left {
+  to {
+    transform: translateX(-22%);
+    opacity: 0;
+  }
+}
+
+@keyframes vt-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes vt-slide-out-right {
+  to {
+    transform: translateX(22%);
+    opacity: 0;
+  }
+}
+
+@keyframes vt-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+html:active-view-transition-type(swipe-forward)::view-transition-old(root) {
+  animation: vt-slide-out-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+html:active-view-transition-type(swipe-forward)::view-transition-new(root) {
+  animation: vt-slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+html:active-view-transition-type(swipe-back)::view-transition-old(root) {
+  animation: vt-slide-out-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+html:active-view-transition-type(swipe-back)::view-transition-new(root) {
+  animation: vt-slide-in-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

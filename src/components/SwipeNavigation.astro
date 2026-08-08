@@ -1,0 +1,149 @@
+---
+/**
+ * Horizontal swipe navigation for touch devices.
+ *
+ * Swiping left goes to the next page in nav order, right goes to the previous
+ * one — Home → About → Products → Contact. The order is read from `navLinks`
+ * so it can't drift from the header.
+ *
+ * Renders nothing; it's a behaviour-only component.
+ */
+---
+
+<script>
+  import { navLinks } from "../data/site";
+
+  /** Minimum horizontal travel, as a fraction of viewport width. */
+  const MIN_RATIO = 0.18;
+  const MIN_DISTANCE = 60;
+  /** A swipe has to be this many times more horizontal than vertical. */
+  const DIRECTION_RATIO = 1.8;
+  /** Slower than this and it reads as a drag, not a swipe. */
+  const MAX_DURATION = 800;
+  /**
+   * iOS Safari and Chrome for Android use the screen edges for their own
+   * back/forward gestures. Ignore anything starting in that gutter so we never
+   * fight the browser.
+   */
+  const EDGE_GUTTER = 28;
+
+  const order = navLinks.map((link) => link.href);
+  const normalize = (path: string) => path.replace(/\/+$/, "") || "/";
+
+  // Only on small viewports with a touch-first pointer — matches where the
+  // hamburger nav takes over.
+  const mobile = window.matchMedia("(max-width: 720px) and (pointer: coarse)");
+
+  let startX = 0;
+  let startY = 0;
+  let startedAt = 0;
+  let tracking = false;
+
+  /** Swiping inside something that itself scrolls sideways isn't for us. */
+  function insideHorizontalScroller(target: EventTarget | null): boolean {
+    let node = target instanceof Element ? target : null;
+    while (node && node !== document.body) {
+      const overflowX = getComputedStyle(node).overflowX;
+      if (
+        (overflowX === "auto" || overflowX === "scroll") &&
+        node.scrollWidth > node.clientWidth
+      ) {
+        return true;
+      }
+      node = node.parentElement;
+    }
+    return false;
+  }
+
+  function menuIsOpen(): boolean {
+    return Boolean(
+      document.querySelector("[data-nav-links]")?.classList.contains("is-open"),
+    );
+  }
+
+  document.addEventListener(
+    "touchstart",
+    (event) => {
+      tracking = false;
+      if (!mobile.matches || event.touches.length !== 1 || menuIsOpen()) return;
+
+      const touch = event.touches[0];
+      if (
+        touch.clientX < EDGE_GUTTER ||
+        touch.clientX > window.innerWidth - EDGE_GUTTER
+      ) {
+        return;
+      }
+      if (insideHorizontalScroller(event.target)) return;
+
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startedAt = Date.now();
+      tracking = true;
+    },
+    { passive: true },
+  );
+
+  document.addEventListener(
+    "touchend",
+    (event) => {
+      if (!tracking) return;
+      tracking = false;
+
+      // Don't yank the page out from under someone selecting text.
+      if (!window.getSelection()?.isCollapsed) return;
+
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      if (Date.now() - startedAt > MAX_DURATION) return;
+
+      const threshold = Math.max(
+        MIN_DISTANCE,
+        window.innerWidth * MIN_RATIO,
+      );
+      if (Math.abs(dx) < threshold) return;
+      if (Math.abs(dx) < Math.abs(dy) * DIRECTION_RATIO) return;
+
+      const current = order.findIndex(
+        (href) => normalize(href) === normalize(location.pathname),
+      );
+      // Not a page in the nav (the 404, say) — nothing to step through.
+      if (current === -1) return;
+
+      // Swiping left pulls the next page in from the right, like turning a page.
+      const forward = dx < 0;
+      const destination = order[current + (forward ? 1 : -1)];
+      // Deliberately no wraparound: the ends of the nav are the ends.
+      if (!destination) return;
+
+      sessionStorage.setItem("swipe-direction", forward ? "forward" : "back");
+      location.assign(destination);
+    },
+    { passive: true },
+  );
+
+  // --- Directional page transition -----------------------------------------
+  // A swipe should slide, not cross-fade. The direction is stashed in
+  // sessionStorage so the incoming document knows which way it was going, and
+  // applied as a view-transition type that global.css animates.
+
+  function applyType(transition: ViewTransition | undefined, consume: boolean) {
+    const direction = sessionStorage.getItem("swipe-direction");
+    if (consume) sessionStorage.removeItem("swipe-direction");
+    // `types` is newer than view transitions themselves; without it the
+    // default cross-fade just stays.
+    if (direction && transition?.types) {
+      transition.types.add(`swipe-${direction}`);
+    }
+  }
+
+  window.addEventListener("pageswap", (event) => {
+    applyType((event as PageSwapEvent).viewTransition ?? undefined, false);
+  });
+
+  window.addEventListener("pagereveal", (event) => {
+    applyType((event as PageRevealEvent).viewTransition ?? undefined, true);
+  });
+</script>

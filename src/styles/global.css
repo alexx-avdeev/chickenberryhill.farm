@@ -111,37 +111,6 @@ select {
 }
 
 /* --------------------------------------------------------------------------
-   Entrance animation
-   -------------------------------------------------------------------------- */
-
-@keyframes floatUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.float-up {
-  animation: floatUp 0.7s ease both;
-}
-
-.float-up-1 {
-  animation: floatUp 0.7s ease 0.05s both;
-}
-
-.float-up-2 {
-  animation: floatUp 0.7s ease 0.12s both;
-}
-
-.float-up-3 {
-  animation: floatUp 0.7s ease 0.19s both;
-}
-
-/* --------------------------------------------------------------------------
    Layout primitives
    -------------------------------------------------------------------------- */
 

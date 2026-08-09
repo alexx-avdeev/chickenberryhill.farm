@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Photo from "../components/Photo.astro";
+import aboutLead from "../assets/about-lead.jpg";
 import { values } from "../data/site";
 ---
 
@@ -18,10 +19,27 @@ import { values } from "../data/site";
 
   <!-- LEAD IMAGE -->
   <section class="shell lead">
+    <!-- 16/9, as the design renders it.
+         The design's CSS also carries `max-height:520px`, but at its ~889px
+         preview width 16/9 works out to 500px, so that cap never binds and was
+         never seen. At our full 1056px shell it would clamp the frame to
+         2.03:1 and crop far harder than the design ever showed, so it's left
+         off deliberately — don't "restore" it.
+
+         The master is pre-cropped to the exact visible band, so nothing is
+         downloaded that the frame then throws away, and no object-position is
+         needed. The framing was derived from `about-lead-uncropped.jpg`
+         (2000x1414, 40px black bar top and bottom): a 16/9 cover crop hides
+         289px of height, so the band starts at row 40 — where the bar ends —
+         and runs 1125px, which is exactly 16/9. Taking it all off the bottom
+         is what keeps the head in the second panel intact; centring instead
+         would cost 104px of headroom and clip it. Re-crop from the uncropped
+         file if the framing ever needs to change. -->
     <Photo
+      image={aboutLead}
+      alt="Four moments from the farm: a child holding a large buff chicken; a man kneeling to bottle-feed a black-and-white lamb; a young woman cheek to cheek with a grey goat; and a child in a hooded sweatshirt cradling a cream-coloured goat kid."
       label="Drop a photo of your family / farm"
       aspect="16 / 9"
-      maxHeight="520px"
       eager
     />
   </section>

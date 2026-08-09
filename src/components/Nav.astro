@@ -108,6 +108,11 @@ const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
     color: var(--ink);
   }
 
+  .nav__link.is-active {
+    padding-block: 3px;
+    border-bottom: 1px solid var(--nav-underline);
+  }
+
   .nav__cta {
     background: var(--surface-dark);
     color: var(--ink-on-dark);
@@ -154,6 +159,16 @@ const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
       padding: 13px 8px;
       font-size: 16px;
       border-radius: 10px;
+    }
+
+    /* An underline reads as a divider once the menu stacks, so the current
+       page is marked with a tint instead. Selector is deliberately more
+       specific than the desktop `.nav__link.is-active` rule so its
+       padding-block and border are overridden without !important. */
+    .nav__links .nav__link.is-active {
+      padding-block: 13px;
+      border-bottom: none;
+      background: var(--nav-active-tint);
     }
 
     .nav__cta {

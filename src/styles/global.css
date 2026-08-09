@@ -35,6 +35,10 @@
   --border-hover: oklch(0.7 0.02 60);
   --border-dashed: oklch(0.82 0.01 80);
 
+  /* Nav active page: underlined on desktop, tinted in the stacked mobile menu */
+  --nav-underline: oklch(0.72 0.02 60);
+  --nav-active-tint: oklch(0.96 0.008 85);
+
   /* Type */
   --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
   --font-display: "Newsreader", Georgia, serif;

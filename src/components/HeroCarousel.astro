@@ -57,6 +57,7 @@ const slides = heroSlides.map((slide, i) => ({
           radius="0"
           eager={i === 0}
           fetchPriority={i === 0 ? "high" : "low"}
+          maxWidth={1440}
           sizes="(max-width: 720px) calc(100vw - 36px), (max-width: 1184px) calc(100vw - 64px), 1056px"
         />
       </div>
@@ -183,6 +184,8 @@ const slides = heroSlides.map((slide, i) => ({
       dots.forEach((dot, i) =>
         dot.setAttribute("aria-current", i === index ? "true" : "false"),
       );
+      // Stay one ahead, so the next morph always has something to morph to.
+      warmSlide(index + 1);
     };
 
     // Assume visible. The observer below only ever *pauses* — if it never
@@ -197,18 +200,20 @@ const slides = heroSlides.map((slide, i) => ({
     };
 
     /**
-     * Slides 2-5 are lazy and the carousel can sit below the fold, so the
-     * browser may never request them — and autoplaying regardless would
-     * advance onto images that were never fetched, showing a blank frame.
-     * Flipping them to eager once the page has loaded pulls them in without
-     * ever competing with the LCP image.
+     * Slides 2-5 are lazy, and the carousel can sit below the fold, so the
+     * browser may never request them — autoplaying regardless would advance
+     * onto an image that was never fetched and show a blank frame.
+     *
+     * Rather than pulling in all five (which is most of the page's weight for
+     * four pictures nobody has seen yet), each slide is fetched just before it
+     * is needed: the next one is warmed as the current one appears. Someone who
+     * leaves after ten seconds has downloaded three, not five.
      */
-    const warmSlides = () => {
-      root
-        .querySelectorAll<HTMLImageElement>('img[loading="lazy"]')
-        .forEach((img) => {
-          img.loading = "eager";
-        });
+    const warmSlide = (i: number) => {
+      const img = slides[(i + slides.length) % slides.length]?.querySelector<HTMLImageElement>(
+        'img[loading="lazy"]',
+      );
+      if (img) img.loading = "eager";
     };
 
     dots.forEach((dot, i) =>
@@ -230,7 +235,7 @@ const slides = heroSlides.map((slide, i) => ({
     stillness.addEventListener("change", start);
 
     const begin = () => {
-      warmSlides();
+      warmSlide(index + 1);
       start();
     };
 

@@ -48,6 +48,14 @@ interface Props {
   /** Widths the layout renders this at, for the browser to pick from. */
   sizes?: string;
   /**
+   * Largest variant to generate. The default ladder tops out at 2112 so a 2x
+   * screen gets a true 2x image at the 1056px shell — correct, but for big
+   * photographs it roughly doubles the bytes for detail that isn't visible at
+   * arm's length. Lower it per-image where weight matters more than pixel
+   * peeping; 1440 is ~1.36x and holds up on a dense display.
+   */
+  maxWidth?: number;
+  /**
    * Which part of the photo survives when the frame crops it — the CSS
    * `object-position`. "center" keeps the middle; "top" / "50% 30%" pull the
    * visible band upwards, which is what you want when faces sit high in frame.
@@ -68,6 +76,7 @@ const {
   sizes = "(max-width: 720px) calc(100vw - 36px), (max-width: 1184px) calc(100vw - 64px), 1056px",
   objectPosition = "center",
   fetchPriority = eager ? "high" : "auto",
+  maxWidth = Infinity,
 } = Astro.props;
 
 /**
@@ -95,9 +104,10 @@ if (src && !resolvedSrc) {
 //
 // Never upscale past the source, and don't bother with widths above what the
 // 1120px shell can show on a 2x screen.
-const candidateWidths = [480, 768, 1056, 1600, 2112];
+const candidateWidths = [480, 768, 1056, 1440, 1600, 2112];
+const ceiling = image ? Math.min(image.width, maxWidth) : 0;
 const widths = image
-  ? candidateWidths.filter((w) => w <= image.width).concat(image.width)
+  ? candidateWidths.filter((w) => w <= ceiling).concat(ceiling)
   : [];
 
 const naturalAspect = image ? `${image.width} / ${image.height}` : null;

@@ -1,0 +1,259 @@
+---
+import Photo from "./Photo.astro";
+import { heroSlides } from "../data/site";
+
+/**
+ * The home hero: five stacked layers that morph between each other — the
+ * outgoing slide fades while scaling up slightly and blurring, the incoming one
+ * settles back to 1x and sharp. Autoplays every 5s; the dots jump straight to a
+ * slide and restart the timer.
+ *
+ * Photos live in `src/assets/hero/` and are matched to `heroSlides` by
+ * filename. Slides whose file is missing fall back to the numbered placeholder,
+ * so this renders correctly before the photos exist.
+ */
+
+// Globbed rather than imported one by one: a static import of a file that isn't
+// there yet fails the build, and these arrive piecemeal.
+const found = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/hero/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const byFilename = new Map(
+  Object.entries(found).map(([path, mod]) => [
+    path.split("/").pop() ?? path,
+    mod.default,
+  ]),
+);
+
+const slides = heroSlides.map((slide, i) => ({
+  image: byFilename.get(slide.file) ?? null,
+  alt: slide.alt,
+  label: `Drop a wide farm / pasture photo (${i + 1} of ${heroSlides.length})`,
+  position: i + 1,
+}));
+---
+
+<div
+  class="hero-carousel"
+  role="group"
+  aria-roledescription="carousel"
+  aria-label="Photos from the farm"
+  data-hero-carousel
+>
+  {
+    slides.map((slide, i) => (
+      <div
+        class:list={["hero-carousel__slide", { "is-current": i === 0 }]}
+        data-hero-slide
+        aria-hidden={i === 0 ? undefined : "true"}
+      >
+        <Photo
+          image={slide.image}
+          alt={slide.alt}
+          label={slide.label}
+          height="100%"
+          radius="0"
+          eager={i === 0}
+          fetchPriority={i === 0 ? "high" : "low"}
+          sizes="(max-width: 720px) calc(100vw - 36px), (max-width: 1184px) calc(100vw - 64px), 1056px"
+        />
+      </div>
+    ))
+  }
+
+  <div class="hero-carousel__dots">
+    {
+      slides.map((slide, i) => (
+        <button
+          type="button"
+          class="hero-carousel__dot"
+          aria-label={`Photo ${slide.position}`}
+          aria-current={i === 0 ? "true" : "false"}
+          data-hero-dot
+        />
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .hero-carousel {
+    position: relative;
+    width: 100%;
+    /* 16/9, as the design renders it. The design's CSS also carries
+       `max-height:560px`, but at its ~889px preview width 16/9 comes to 500px,
+       so that cap never binds and was never seen — at our full 1056px shell it
+       would squash the frame to 1.89:1. Same trap as the About lead photo;
+       left off deliberately. */
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--surface-placeholder);
+  }
+
+  .hero-carousel__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(10px);
+    pointer-events: none;
+    transition:
+      opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 1.9s cubic-bezier(0.4, 0, 0.2, 1),
+      filter 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform, filter;
+  }
+
+  .hero-carousel__slide.is-current {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+    pointer-events: auto;
+  }
+
+  .hero-carousel__dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 9px;
+    z-index: 2;
+  }
+
+  .hero-carousel__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: var(--carousel-dot-idle);
+    transition: background 0.4s ease;
+  }
+
+  .hero-carousel__dot[aria-current="true"] {
+    background: var(--carousel-dot);
+  }
+
+  /* 8px is below a comfortable tap target; give the dots invisible reach
+     without moving them apart visually. */
+  .hero-carousel__dot::after {
+    content: "";
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    transform: translate(-12px, -12px);
+  }
+</style>
+
+<script>
+  const AUTOPLAY_MS = 5000;
+
+  let timer: number | undefined;
+
+  function initHeroCarousel() {
+    window.clearInterval(timer);
+
+    const root = document.querySelector<HTMLElement>("[data-hero-carousel]");
+    if (!root) return;
+
+    const slides = [...root.querySelectorAll<HTMLElement>("[data-hero-slide]")];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>("[data-hero-dot]")];
+    if (slides.length < 2) return;
+
+    // Auto-advancing motion is exactly what someone asking for reduced motion
+    // wants stopped. The dots still work.
+    const stillness = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    let index = slides.findIndex((s) => s.classList.contains("is-current"));
+    if (index < 0) index = 0;
+
+    const show = (next: number) => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        const current = i === index;
+        slide.classList.toggle("is-current", current);
+        if (current) slide.removeAttribute("aria-hidden");
+        else slide.setAttribute("aria-hidden", "true");
+      });
+      dots.forEach((dot, i) =>
+        dot.setAttribute("aria-current", i === index ? "true" : "false"),
+      );
+    };
+
+    // Assume visible. The observer below only ever *pauses* — if it never
+    // fires, the carousel still works rather than sitting dead.
+    let inView = true;
+
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      stop();
+      if (!inView || stillness.matches) return;
+      timer = window.setInterval(() => show(index + 1), AUTOPLAY_MS);
+    };
+
+    /**
+     * Slides 2-5 are lazy and the carousel can sit below the fold, so the
+     * browser may never request them — and autoplaying regardless would
+     * advance onto images that were never fetched, showing a blank frame.
+     * Flipping them to eager once the page has loaded pulls them in without
+     * ever competing with the LCP image.
+     */
+    const warmSlides = () => {
+      root
+        .querySelectorAll<HTMLImageElement>('img[loading="lazy"]')
+        .forEach((img) => {
+          img.loading = "eager";
+        });
+    };
+
+    dots.forEach((dot, i) =>
+      dot.addEventListener("click", () => {
+        show(i);
+        start();
+      }),
+    );
+
+    // Don't advance out from under someone reading or tabbing through it, and
+    // don't burn cycles in a background tab.
+    root.addEventListener("pointerenter", stop);
+    root.addEventListener("pointerleave", start);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("focusout", start);
+    document.addEventListener("visibilitychange", () =>
+      document.hidden ? stop() : start(),
+    );
+    stillness.addEventListener("change", start);
+
+    const begin = () => {
+      warmSlides();
+      start();
+    };
+
+    if (document.readyState === "complete") begin();
+    else window.addEventListener("load", begin, { once: true });
+
+    // Purely an optimisation: don't animate what nobody is looking at.
+    if ("IntersectionObserver" in window) {
+      const seen = new IntersectionObserver(
+        (entries) => {
+          inView = entries.some((e) => e.isIntersecting);
+          if (inView) start();
+          else stop();
+        },
+        { rootMargin: "200px" },
+      );
+      seen.observe(root);
+    }
+  }
+
+  initHeroCarousel();
+
+  // Swipe paging swaps <main> without a document load, so the markup this was
+  // bound to is thrown away. Re-bind whenever the pager reports a swap.
+  document.addEventListener("page:swapped", initHeroCarousel);
+</script>

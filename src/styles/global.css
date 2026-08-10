@@ -39,6 +39,10 @@
   --nav-underline: oklch(0.72 0.02 60);
   --nav-active-tint: oklch(0.96 0.008 85);
 
+  /* Hero carousel dots — the dark surface at full strength and at 30% */
+  --carousel-dot: oklch(0.35 0.015 60);
+  --carousel-dot-idle: oklch(0.35 0.015 60 / 0.3);
+
   /* Type */
   --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
   --font-display: "Newsreader", Georgia, serif;

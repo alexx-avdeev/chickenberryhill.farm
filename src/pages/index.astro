@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Photo from "../components/Photo.astro";
+import HeroCarousel from "../components/HeroCarousel.astro";
 import { site, animals, products } from "../data/site";
 ---
 
@@ -21,13 +22,9 @@ import { site, animals, products } from "../data/site";
     </div>
   </section>
 
-  <!-- HERO IMAGE -->
+  <!-- HERO CAROUSEL -->
   <section class="shell hero-image">
-    <Photo
-      label="Drop a wide farm / pasture photo"
-      height="clamp(320px, 52vw, 560px)"
-      eager
-    />
+    <HeroCarousel />
   </section>
 
   <!-- STORY TEASER -->

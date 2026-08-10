@@ -39,6 +39,12 @@ interface Props {
   radius?: string;
   /** First image on the page shouldn't be lazy-loaded. */
   eager?: boolean;
+  /**
+   * Overrides the priority `eager` would imply. Carousel slides past the first
+   * are in the viewport, so `loading="lazy"` alone barely defers them — marking
+   * them "low" keeps them from competing with the LCP image.
+   */
+  fetchPriority?: "high" | "low" | "auto";
   /** Widths the layout renders this at, for the browser to pick from. */
   sizes?: string;
   /**
@@ -61,6 +67,7 @@ const {
   eager = false,
   sizes = "(max-width: 720px) calc(100vw - 36px), (max-width: 1184px) calc(100vw - 64px), 1056px",
   objectPosition = "center",
+  fetchPriority = eager ? "high" : "auto",
 } = Astro.props;
 
 /**
@@ -118,7 +125,7 @@ const frameStyle = [
         sizes={sizes}
         loading={eager ? "eager" : "lazy"}
         decoding={eager ? "sync" : "async"}
-        fetchpriority={eager ? "high" : "auto"}
+        fetchpriority={fetchPriority}
       />
     ) : resolvedSrc ? (
       <img
@@ -126,7 +133,7 @@ const frameStyle = [
         alt={alt}
         loading={eager ? "eager" : "lazy"}
         decoding={eager ? "sync" : "async"}
-        fetchpriority={eager ? "high" : "auto"}
+        fetchpriority={fetchPriority}
       />
     ) : (
       <span class="photo__empty">{label}</span>

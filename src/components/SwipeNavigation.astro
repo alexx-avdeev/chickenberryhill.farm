@@ -205,7 +205,17 @@
     mainEl.setAttribute("tabindex", "-1");
     mainEl.focus({ preventScroll: true });
 
+    announceSwap();
     prefetchNeighbours();
+  }
+
+  /**
+   * Replacing <main> destroys whatever the page's own scripts were bound to,
+   * and no document load follows to re-run them. Anything with behaviour inside
+   * <main> (the hero carousel) listens for this to re-bind itself.
+   */
+  function announceSwap() {
+    document.dispatchEvent(new CustomEvent("page:swapped"));
   }
 
   function syncNav() {
@@ -382,6 +392,7 @@
       main.innerHTML = page.main;
       document.title = page.title;
       syncNav();
+      announceSwap();
       prefetchNeighbours();
     });
   });

@@ -24,6 +24,40 @@ export const navLinks = [
   { label: "Contact", href: "/contact/" },
 ] as const;
 
+/**
+ * The home hero carousel — five morphing slides, matching the design.
+ *
+ * `file` is looked for in `src/assets/hero/`. Any slide whose file isn't there
+ * yet renders the numbered placeholder well instead, so the carousel works
+ * while the photos are still being gathered.
+ *
+ * Masters are pre-cropped to 16/9 — the ratio the frame renders at — so none
+ * of what's downloaded is thrown away by `object-fit`. Re-crop from the
+ * originals rather than changing the frame; see `src/assets/hero/README.md`.
+ */
+export const heroSlides = [
+  {
+    file: "hero-1.jpg",
+    alt: "A nanny goat and her kid standing close together in a winter pasture as the sun burns through morning fog.",
+  },
+  {
+    file: "hero-2.jpg",
+    alt: "The herd and flock grazing across an open green pasture, with a wooded hillside and heavy grey clouds behind.",
+  },
+  {
+    file: "hero-3.jpg",
+    alt: "Mist settling over a mown pasture at dawn, a broad maple standing alone at the edge of the field.",
+  },
+  {
+    file: "hero-4.jpg",
+    alt: "Four young goats grazing in a spring pasture beside a tree in white blossom.",
+  },
+  {
+    file: "hero-5.jpg",
+    alt: "Sheep and goats spread across the pasture under a dark overcast sky, with a line of summer trees behind.",
+  },
+] as const;
+
 /** The animals on the hill, shown on the home page. */
 export const animals = [
   { name: "Goats", image: null },

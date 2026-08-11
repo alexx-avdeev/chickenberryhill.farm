@@ -253,7 +253,9 @@ html.is-swiping main {
 }
 
 .display-md {
-  margin: 0;
+  /* `auto` matters: paired with a `measure-*` cap the box has to centre
+     itself. `text-align: center` only centres the text inside it. */
+  margin: 0 auto;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(28px, 4vw, 44px);

@@ -1,53 +1,81 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
 import InstagramIcon from "../components/InstagramIcon.astro";
 import { site, products, orderMailto, reserveMailto, mailto } from "../data/site";
 
 const helloMailto = mailto("Hello from the ChickenBerry Hill website");
+
+// Bottom margin is left to each use — "Follow along" sits slightly further off
+// its link than the other two do off their paragraphs. Stacking two `mb-*`
+// utilities here would leave the winner up to Tailwind's output order.
+const asideLabel =
+  "text-[13px] font-semibold tracking-[0.1em] text-green uppercase";
 ---
 
 <BaseLayout
   title="Contact"
   description="Place an order or say hello to ChickenBerry Hill Farm in Hartsville, Tennessee. On-farm pickup by appointment."
 >
-  <div class="shell contact">
+  <div
+    class="mx-auto grid max-w-note grid-cols-1 gap-16 px-[18px] py-24 md:px-8"
+  >
     <!-- HEADER -->
-    <section class="center">
-      <p class="eyebrow">Get in touch</p>
-      <h1 class="display-lg measure-16">
+    <section class="text-center">
+      <p
+        class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+      >
+        Get in touch
+      </p>
+      <h1
+        class="mx-auto max-w-[16ch] font-display text-[clamp(40px,6vw,72px)] leading-[1.05] font-normal tracking-[-0.02em] text-ink"
+      >
         Place an order or say hello
       </h1>
-      <p class="contact__lede">
+      <p
+        class="mx-auto mt-6 max-w-[48ch] text-[18px] leading-[1.55] text-ink-soft"
+      >
         Tell us what you're after and we'll get right back to you with
         availability and pickup details.
       </p>
     </section>
 
-    <div class="contact__grid">
+    <div
+      class="grid grid-cols-[1.4fr_1fr] items-start gap-14 max-md:grid-cols-1 max-md:gap-10"
+    >
       <!-- EMAIL CARD -->
-      <section class="mail">
-        <h2 class="mail__title">Send us an email</h2>
-        <p class="mail__body">
+      <section
+        class="rounded-3xl border border-green-border bg-green-tint p-10 max-md:px-6 max-md:py-8"
+      >
+        <h2 class="font-display text-[26px] font-medium text-ink">
+          Send us an email
+        </h2>
+        <p class="mt-3 text-[16px] leading-[1.6] text-ink-quiet">
           The fastest way to reach the farm. Let us know what you'd like, how
           much, and roughly when you need it — we'll reply with availability and
           a pickup time.
         </p>
 
-        <a href={orderMailto} class="btn btn--primary mail__cta">
-          Email us about an order
-        </a>
+        <Button href={orderMailto} class="mt-7">Email us about an order</Button>
 
-        <p class="mail__address">
+        <p class="mt-[18px] text-[15px] text-ink-soft">
           or write to <a href={helloMailto}>{site.email}</a>
         </p>
 
-        <div class="mail__shortcuts">
-          <p class="mail__shortcuts-label">Reserve something specific</p>
-          <ul>
+        <div class="mt-8 border-t border-green-border pt-7">
+          <p
+            class="mb-3 text-[13px] font-semibold tracking-[0.1em] text-green uppercase"
+          >
+            Reserve something specific
+          </p>
+          <ul class="flex flex-col gap-2.5">
             {
               products.map((product) => (
                 <li>
-                  <a href={reserveMailto(product.name)} class="text-link">
+                  <a
+                    href={reserveMailto(product.name)}
+                    class="text-[15px] font-semibold"
+                  >
                     {product.name} →
                   </a>
                 </li>
@@ -58,25 +86,25 @@ const helloMailto = mailto("Hello from the ChickenBerry Hill website");
       </section>
 
       <!-- SIDE INFO -->
-      <aside class="aside">
+      <aside class="flex flex-col gap-8">
         <div>
-          <h2 class="aside__label">Find us</h2>
-          <p class="aside__address">
+          <h2 class:list={[asideLabel, "mb-1.5"]}>Find us</h2>
+          <p class="text-[17px] leading-[1.5] text-ink-body">
             {site.name}<br />{site.location}
           </p>
         </div>
         <div>
-          <h2 class="aside__label">Pickup</h2>
-          <p class="aside__text">
+          <h2 class:list={[asideLabel, "mb-1.5"]}>Pickup</h2>
+          <p class="text-[16px] leading-[1.55] text-ink-mid">
             On-farm pickup by appointment. We'll coordinate a time when you
             order.
           </p>
         </div>
         <div>
-          <h2 class="aside__label aside__label--spaced">Follow along</h2>
+          <h2 class:list={[asideLabel, "mb-2.5"]}>Follow along</h2>
           <a
             href={site.instagram}
-            class="aside__social"
+            class="inline-flex items-center gap-[9px] text-[16px] font-semibold"
             rel="me noopener noreferrer"
             target="_blank"
           >
@@ -88,138 +116,3 @@ const helloMailto = mailto("Hello from the ChickenBerry Hill website");
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .contact {
-    max-width: 1000px;
-    padding-block: 96px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 64px;
-  }
-
-  .contact__lede {
-    margin: 24px auto 0;
-    max-width: 48ch;
-    font-size: 18px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-  }
-
-  .contact__grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 56px;
-    align-items: start;
-  }
-
-  /* Email card */
-  .mail {
-    border: 1px solid var(--green-border);
-    background: var(--green-tint);
-    border-radius: 24px;
-    padding: 40px;
-  }
-
-  .mail__title {
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: 26px;
-    color: var(--ink);
-  }
-
-  .mail__body {
-    margin: 12px 0 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: oklch(0.42 0.015 60);
-  }
-
-  .mail__cta {
-    margin-top: 28px;
-  }
-
-  .mail__address {
-    margin: 18px 0 0;
-    font-size: 15px;
-    color: var(--ink-soft);
-  }
-
-  .mail__shortcuts {
-    margin-top: 32px;
-    padding-top: 28px;
-    border-top: 1px solid var(--green-border);
-  }
-
-  .mail__shortcuts-label {
-    margin: 0 0 12px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--green);
-  }
-
-  .mail__shortcuts ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  /* Aside */
-  .aside {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .aside__label {
-    margin: 0 0 6px;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--green);
-  }
-
-  .aside__label--spaced {
-    margin-bottom: 10px;
-  }
-
-  .aside__address {
-    margin: 0;
-    font-size: 17px;
-    line-height: 1.5;
-    color: var(--ink-body);
-  }
-
-  .aside__text {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.55;
-    color: oklch(0.45 0.015 60);
-  }
-
-  .aside__social {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  @media (max-width: 720px) {
-    .contact__grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-
-    .mail {
-      padding: 32px 24px;
-    }
-  }
-</style>

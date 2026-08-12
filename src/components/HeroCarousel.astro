@@ -35,8 +35,13 @@ const slides = heroSlides.map((slide, i) => ({
 }));
 ---
 
+<!-- 16/9, as the design renders it. The design's CSS also carries
+     `max-height:560px`, but at its ~889px preview width 16/9 comes to 500px, so
+     that cap never binds and was never seen — at our full 1056px shell it would
+     squash the frame to 1.89:1. Same trap as the About lead photo; left off
+     deliberately. -->
 <div
-  class="hero-carousel"
+  class="hero-carousel relative aspect-video w-full overflow-hidden rounded-panel bg-well"
   role="group"
   aria-roledescription="carousel"
   aria-label="Photos from the farm"
@@ -64,12 +69,16 @@ const slides = heroSlides.map((slide, i) => ({
     ))
   }
 
-  <div class="hero-carousel__dots">
+  <div
+    class="absolute bottom-5 left-1/2 z-[2] flex -translate-x-1/2 gap-[9px]"
+  >
     {
       slides.map((slide, i) => (
+        // 8px is below a comfortable tap target; the ::after gives each dot
+        // invisible reach without moving them apart visually.
         <button
           type="button"
-          class="hero-carousel__dot"
+          class="size-2 cursor-pointer rounded-full bg-dot-idle transition-colors duration-400 after:absolute after:size-8 after:-translate-x-3 after:-translate-y-3 after:content-[''] aria-[current=true]:bg-dot"
           aria-label={`Photo ${slide.position}`}
           aria-current={i === 0 ? "true" : "false"}
           data-hero-dot
@@ -80,20 +89,8 @@ const slides = heroSlides.map((slide, i) => ({
 </div>
 
 <style>
-  .hero-carousel {
-    position: relative;
-    width: 100%;
-    /* 16/9, as the design renders it. The design's CSS also carries
-       `max-height:560px`, but at its ~889px preview width 16/9 comes to 500px,
-       so that cap never binds and was never seen — at our full 1056px shell it
-       would squash the frame to 1.89:1. Same trap as the About lead photo;
-       left off deliberately. */
-    aspect-ratio: 16 / 9;
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    background: var(--surface-placeholder);
-  }
-
+  /* Left as hand-written CSS: one coherent motion spec across three properties
+     with different durations, toggled by a class from the script below. */
   .hero-carousel__slide {
     position: absolute;
     inset: 0;
@@ -113,41 +110,6 @@ const slides = heroSlides.map((slide, i) => ({
     transform: scale(1);
     filter: blur(0);
     pointer-events: auto;
-  }
-
-  .hero-carousel__dots {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 9px;
-    z-index: 2;
-  }
-
-  .hero-carousel__dot {
-    width: 8px;
-    height: 8px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    background: var(--carousel-dot-idle);
-    transition: background 0.4s ease;
-  }
-
-  .hero-carousel__dot[aria-current="true"] {
-    background: var(--carousel-dot);
-  }
-
-  /* 8px is below a comfortable tap target; give the dots invisible reach
-     without moving them apart visually. */
-  .hero-carousel__dot::after {
-    content: "";
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    transform: translate(-12px, -12px);
   }
 </style>
 

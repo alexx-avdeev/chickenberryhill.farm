@@ -1,7 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
 import { products, orderMailto, reserveMailto } from "../data/site";
+
+// Looked up rather than interpolated: Tailwind scans source text for whole
+// class names, so a built-up `text-${tone}` would never be generated.
+const tagTone = {
+  green: "text-green",
+  berry: "text-berry",
+};
 ---
 
 <BaseLayout
@@ -9,21 +17,33 @@ import { products, orderMailto, reserveMailto } from "../data/site";
   description="Pasture-raised chicken, grass-fed lamb, and fresh quail eggs from ChickenBerry Hill Farm in Hartsville, Tennessee."
 >
   <!-- HEADER -->
-  <section class="shell shell--prose page-head center">
-    <p class="eyebrow">The farm stand</p>
-    <h1 class="display-lg measure-14">What's for sale</h1>
-    <p class="page-head__lede">
+  <section
+    class="mx-auto max-w-copy px-[18px] pt-24 pb-14 text-center md:px-8"
+  >
+    <p
+      class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+    >
+      The farm stand
+    </p>
+    <h1
+      class="mx-auto max-w-[14ch] font-display text-[clamp(40px,6vw,72px)] leading-[1.05] font-normal tracking-[-0.02em] text-ink"
+    >
+      What's for sale
+    </h1>
+    <p
+      class="mx-auto mt-[26px] max-w-[50ch] text-[19px] leading-[1.55] text-ink-soft"
+    >
       Everything here comes from our own animals. Availability shifts with the
       seasons — reserve what you'd like and we'll be in touch.
     </p>
   </section>
 
   <!-- PRODUCTS -->
-  <section class="shell catalog">
-    <ul class="catalog__grid">
+  <section class="mx-auto max-w-page px-[18px] pt-4 pb-10 md:px-8">
+    <ul class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-7">
       {
         products.map((product) => (
-          <li class="card">
+          <li class="flex flex-col overflow-hidden rounded-card border border-line bg-bg">
             <Photo
               src={product.image}
               alt={product.name}
@@ -31,21 +51,29 @@ import { products, orderMailto, reserveMailto } from "../data/site";
               aspect="4 / 3"
               radius="0"
             >
-              <span class:list={["card__tag", `card__tag--${product.tagTone}`]}>
+              <span
+                class:list={[
+                  "absolute top-3.5 left-3.5 rounded-full bg-bg/92 px-3 py-1.5 text-[12px] font-bold tracking-[0.04em] uppercase backdrop-blur-[6px]",
+                  tagTone[product.tagTone],
+                ]}
+              >
                 {product.tag}
               </span>
             </Photo>
-            <div class="card__body">
-              <h2 class="card__name">{product.name}</h2>
-              <p class="card__desc">{product.description}</p>
-              <div class="card__foot">
-                <span class="card__price">{product.price}</span>
-                <a
-                  href={reserveMailto(product.name)}
-                  class="btn btn--primary btn--small"
-                >
+            <div class="flex flex-1 flex-col px-[26px] pt-[26px] pb-7">
+              <h2 class="font-display text-[26px] font-medium text-ink">
+                {product.name}
+              </h2>
+              <p class="mt-2.5 flex-1 text-[16px] leading-[1.6] text-ink-soft">
+                {product.description}
+              </p>
+              <div class="mt-[22px] flex items-center justify-between gap-4">
+                <span class="text-[15px] font-semibold text-ink-body">
+                  {product.price}
+                </span>
+                <Button href={reserveMailto(product.name)} small>
                   Reserve
-                </a>
+                </Button>
               </div>
             </div>
           </li>
@@ -55,9 +83,11 @@ import { products, orderMailto, reserveMailto } from "../data/site";
   </section>
 
   <!-- NOTE -->
-  <section class="shell shell--prose note-wrap">
-    <div class="note">
-      <p>
+  <section class="mx-auto max-w-copy px-[18px] pt-14 pb-10 md:px-8">
+    <div
+      class="rounded-tile border border-dashed border-line-dashed bg-tint px-9 py-8 text-center"
+    >
+      <p class="text-[16px] leading-[1.6] text-ink-quiet">
         Not sure what's in stock right now? Seasonal items like chicken and lamb
         are raised in batches. Send us a note and we'll tell you exactly what's
         available and when.
@@ -66,126 +96,7 @@ import { products, orderMailto, reserveMailto } from "../data/site";
   </section>
 
   <!-- CTA -->
-  <section class="shell shell--prose outro center">
-    <a href={orderMailto} class="btn btn--dark">Place an order</a>
+  <section class="mx-auto max-w-copy px-[18px] pt-10 pb-24 text-center md:px-8">
+    <Button href={orderMailto} variant="dark">Place an order</Button>
   </section>
 </BaseLayout>
-
-<style>
-  .page-head {
-    padding-block: 96px 56px;
-  }
-
-  .page-head__lede {
-    margin: 26px auto 0;
-    max-width: 50ch;
-    font-size: 19px;
-    line-height: 1.55;
-    color: var(--ink-soft);
-  }
-
-  .catalog {
-    padding-block: 16px 40px;
-  }
-
-  .catalog__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 28px;
-  }
-
-  .card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .card__tag {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    background: oklch(0.99 0.006 95 / 0.92);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border-radius: var(--radius-pill);
-  }
-
-  .card__tag--green {
-    color: var(--green);
-  }
-
-  .card__tag--berry {
-    color: var(--berry);
-  }
-
-  .card__body {
-    padding: 26px 26px 28px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .card__name {
-    margin: 0;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: 26px;
-    color: var(--ink);
-  }
-
-  .card__desc {
-    margin: 10px 0 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-    flex: 1;
-  }
-
-  .card__foot {
-    margin-top: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .card__price {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink-body);
-  }
-
-  .note-wrap {
-    padding-block: 56px 40px;
-  }
-
-  .note {
-    border: 1px dashed var(--border-dashed);
-    border-radius: var(--radius-md);
-    padding: 32px 36px;
-    text-align: center;
-    background: var(--surface-tint);
-  }
-
-  .note p {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: oklch(0.42 0.015 60);
-  }
-
-  .outro {
-    padding-block: 40px 96px;
-  }
-</style>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
 import aboutLead from "../assets/about-lead.jpg";
 import { values } from "../data/site";
@@ -10,15 +11,23 @@ import { values } from "../data/site";
   description="ChickenBerry Hill is a small, hands-on family farm outside Hartsville, Tennessee — goats, sheep, rabbits, quail, geese, and chickens raised on pasture."
 >
   <!-- HEADER -->
-  <section class="shell shell--prose page-head center">
-    <p class="eyebrow">Our story</p>
-    <h1 class="display-lg measure-16">
+  <section
+    class="mx-auto max-w-copy px-[18px] pt-24 pb-14 text-center md:px-8"
+  >
+    <p
+      class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+    >
+      Our story
+    </p>
+    <h1
+      class="mx-auto max-w-[16ch] font-display text-[clamp(40px,6vw,72px)] leading-[1.05] font-normal tracking-[-0.02em] text-ink"
+    >
       A family, a hill, and a lot of animals.
     </h1>
   </section>
 
   <!-- LEAD IMAGE -->
-  <section class="shell lead">
+  <section class="mx-auto mb-18 max-w-page px-[18px] md:px-8">
     <!-- 16/9, as the design renders it.
          The design's CSS also carries `max-height:520px`, but at its ~889px
          preview width 16/9 works out to 500px, so that cap never binds and was
@@ -46,19 +55,23 @@ import { values } from "../data/site";
   </section>
 
   <!-- STORY BODY -->
-  <section class="shell shell--narrow story">
-    <p class="story__opener">
+  <section
+    class="mx-auto max-w-narrow px-[18px] pb-10 text-[18px] leading-[1.7] text-ink-muted md:px-8"
+  >
+    <p
+      class="mb-8 font-display text-[clamp(21px,2.4vw,26px)] leading-[1.5] text-ink-body"
+    >
       It started with a few chickens and a promise to ourselves: to raise food
       we'd be proud to feed our own family.
     </p>
-    <p>
+    <p class="mb-[22px]">
       Tucked into the rolling countryside outside Hartsville, Tennessee,
       ChickenBerry Hill is a small, hands-on farm. What began as a backyard
       flock has grown, season by season, into a working homestead — goats and
       sheep grazing the pasture, rabbits and quail in tidy hutches, geese
       keeping watch, and chickens doing what chickens do best.
     </p>
-    <p>
+    <p class="mb-[22px]">
       We do things the slow way on purpose. Our animals live on open ground and
       clean air, with room to be themselves. We know them by name and by
       temperament. That care is the whole point — and you can taste it in
@@ -71,16 +84,23 @@ import { values } from "../data/site";
   </section>
 
   <!-- VALUES -->
-  <section class="band values-band">
-    <div class="shell values">
+  <section class="mt-16 border-y border-line bg-tint">
+    <div
+      class="mx-auto grid max-w-page grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-10 px-[18px] py-20 md:px-8"
+    >
       {
         values.map((value) => (
           <div>
-            <div class="values__num" aria-hidden="true">
+            <div
+              class="mb-[18px] flex size-11 items-center justify-center rounded-xl border border-line bg-bg font-display text-[22px] text-green"
+              aria-hidden="true"
+            >
               <span>{value.num}</span>
             </div>
-            <h2 class="display-sm values__title">{value.title}</h2>
-            <p class="values__body">{value.body}</p>
+            <h2 class="mb-2.5 font-display text-[22px] font-medium text-ink">
+              {value.title}
+            </h2>
+            <p class="text-[16px] leading-[1.6] text-ink-soft">{value.body}</p>
           </div>
         ))
       }
@@ -88,89 +108,15 @@ import { values } from "../data/site";
   </section>
 
   <!-- CTA -->
-  <section class="shell shell--prose outro center">
-    <h2 class="display-md measure-16">Want to taste the difference?</h2>
-    <div class="btn-row outro__row">
-      <a href="/products/" class="btn btn--primary">Shop the farm</a>
-      <a href="/contact/" class="btn btn--outline">Say hello →</a>
+  <section class="mx-auto max-w-copy px-[18px] py-22 text-center md:px-8">
+    <h2
+      class="mx-auto max-w-[16ch] font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+    >
+      Want to taste the difference?
+    </h2>
+    <div class="mt-[30px] flex flex-wrap justify-center gap-[14px]">
+      <Button href="/products/">Shop the farm</Button>
+      <Button href="/contact/" variant="outline">Say hello →</Button>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .page-head {
-    padding-block: 96px 56px;
-  }
-
-  .lead {
-    margin-bottom: 72px;
-  }
-
-  .story {
-    padding-bottom: 40px;
-  }
-
-  .story p {
-    font-size: 18px;
-    line-height: 1.7;
-    color: var(--ink-muted);
-    margin: 0 0 22px;
-  }
-
-  .story p:last-child {
-    margin-bottom: 0;
-  }
-
-  .story__opener {
-    font-family: var(--font-display);
-    font-size: clamp(21px, 2.4vw, 26px) !important;
-    line-height: 1.5 !important;
-    color: var(--ink-body) !important;
-    margin-bottom: 32px !important;
-  }
-
-  .values-band {
-    margin-top: 64px;
-  }
-
-  .values {
-    padding-block: 80px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 40px;
-  }
-
-  .values__num {
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--green);
-    margin-bottom: 18px;
-    font-family: var(--font-display);
-    font-size: 22px;
-  }
-
-  .values__title {
-    margin: 0 0 10px;
-  }
-
-  .values__body {
-    margin: 0;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-
-  .outro {
-    padding-block: 88px;
-  }
-
-  .outro__row {
-    margin-top: 30px;
-  }
-</style>

@@ -5,17 +5,40 @@ import { navLinks } from "../data/site";
 // Normalise so "/about" and "/about/" both match.
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
+
+/**
+ * The current page is marked with `aria-current="page"` and styled off that
+ * attribute rather than a separate class, so there is one source of truth —
+ * SwipeNavigation re-syncs it after a swipe and the styling follows for free.
+ *
+ * Desktop gets an underline; once the menu stacks on mobile an underline reads
+ * as a divider, so it becomes a tint instead. The two live in disjoint media
+ * queries (`md:` / `max-md:`) so neither has to out-specify the other.
+ */
+const linkClass = [
+  "text-ink-softer transition-colors hover:text-ink",
+  "aria-[current=page]:text-ink",
+  "md:aria-[current=page]:border-b md:aria-[current=page]:border-nav-underline md:aria-[current=page]:py-[3px]",
+  "max-md:rounded-[10px] max-md:px-2 max-md:py-[13px] max-md:text-[16px]",
+  "max-md:aria-[current=page]:bg-nav-active-tint",
+].join(" ");
 ---
 
-<header class="nav">
-  <nav class="nav__inner" aria-label="Main">
-    <a href="/" class="nav__brand">
+<header
+  class="sticky top-0 z-50 border-b border-line bg-bg/82 backdrop-blur-[20px] backdrop-saturate-[180%]"
+  data-site-nav
+>
+  <nav
+    class="relative mx-auto flex h-14 max-w-page items-center justify-between px-[18px] md:px-8"
+    aria-label="Main"
+  >
+    <a href="/" class="text-ink">
       <Logo />
     </a>
 
     <button
       type="button"
-      class="nav__toggle"
+      class="-m-2 hidden cursor-pointer items-center justify-center p-2 text-ink max-md:inline-flex"
       aria-label="Menu"
       aria-expanded="false"
       aria-controls="nav-links"
@@ -35,148 +58,31 @@ const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
       </svg>
     </button>
 
-    <div class="nav__links" id="nav-links" data-nav-links>
+    <div
+      class="flex items-center gap-[34px] text-[14px] font-medium max-md:absolute max-md:inset-x-0 max-md:top-14 max-md:hidden max-md:flex-col max-md:items-stretch max-md:gap-1 max-md:border-b max-md:border-line max-md:bg-bg/98 max-md:px-[18px] max-md:pt-2.5 max-md:pb-5 max-md:backdrop-blur-[20px] max-md:backdrop-saturate-[180%] max-md:data-[open]:flex"
+      id="nav-links"
+      data-nav-links
+    >
       {
         navLinks.map((link) => (
           <a
             href={link.href}
-            class:list={["nav__link", { "is-active": isActive(link.href) }]}
+            class={linkClass}
             aria-current={isActive(link.href) ? "page" : undefined}
+            data-nav-link
           >
             {link.label}
           </a>
         ))
       }
-      <a href="/products/" class="nav__cta">Shop</a>
+      <a
+        href="/products/"
+        class="rounded-full bg-dark px-4 py-2 text-ink-on-dark transition-colors hover:bg-dark-hover hover:text-ink-on-dark max-md:mt-1.5 max-md:rounded-[10px] max-md:px-2 max-md:py-[13px] max-md:text-center max-md:text-[16px]"
+        >Shop</a
+      >
     </div>
   </nav>
 </header>
-
-<style>
-  .nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: oklch(0.99 0.006 95 / 0.82);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .nav__inner {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: 0 var(--gutter);
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-  }
-
-  .nav__brand {
-    color: var(--ink);
-  }
-
-  .nav__toggle {
-    display: none;
-    background: none;
-    border: none;
-    padding: 8px;
-    margin: -8px;
-    cursor: pointer;
-    color: var(--ink);
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav__links {
-    display: flex;
-    align-items: center;
-    gap: 34px;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .nav__link {
-    color: var(--ink-softer);
-    transition: color 0.15s ease;
-  }
-
-  .nav__link:hover,
-  .nav__link.is-active {
-    color: var(--ink);
-  }
-
-  .nav__link.is-active {
-    padding-block: 3px;
-    border-bottom: 1px solid var(--nav-underline);
-  }
-
-  .nav__cta {
-    background: var(--surface-dark);
-    color: var(--ink-on-dark);
-    padding: 8px 16px;
-    border-radius: var(--radius-pill);
-    transition: background-color 0.15s ease;
-  }
-
-  .nav__cta:hover {
-    background: var(--surface-dark-hover);
-    color: var(--ink-on-dark);
-  }
-
-  @media (max-width: 720px) {
-    .nav__inner {
-      padding: 0 var(--gutter-mobile);
-    }
-
-    .nav__toggle {
-      display: inline-flex;
-    }
-
-    .nav__links {
-      display: none;
-      position: absolute;
-      top: var(--nav-height);
-      left: 0;
-      right: 0;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 4px;
-      background: oklch(0.99 0.006 95 / 0.98);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 10px var(--gutter-mobile) 20px;
-    }
-
-    .nav__links.is-open {
-      display: flex;
-    }
-
-    .nav__links a {
-      padding: 13px 8px;
-      font-size: 16px;
-      border-radius: 10px;
-    }
-
-    /* An underline reads as a divider once the menu stacks, so the current
-       page is marked with a tint instead. Selector is deliberately more
-       specific than the desktop `.nav__link.is-active` rule so its
-       padding-block and border are overridden without !important. */
-    .nav__links .nav__link.is-active {
-      padding-block: 13px;
-      border-bottom: none;
-      background: var(--nav-active-tint);
-    }
-
-    .nav__cta {
-      text-align: center;
-      margin-top: 6px;
-    }
-  }
-</style>
 
 <script>
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
@@ -184,12 +90,12 @@ const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
 
   if (toggle && links) {
     const setOpen = (open: boolean) => {
-      links.classList.toggle("is-open", open);
+      links.toggleAttribute("data-open", open);
       toggle.setAttribute("aria-expanded", String(open));
     };
 
     toggle.addEventListener("click", () => {
-      setOpen(!links.classList.contains("is-open"));
+      setOpen(!links.hasAttribute("data-open"));
     });
 
     // Navigating within the menu should close it, and so should Escape.
@@ -198,7 +104,7 @@ const isActive = (href: string) => (href.replace(/\/+$/, "") || "/") === path;
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && links.classList.contains("is-open")) {
+      if (event.key === "Escape" && links.hasAttribute("data-open")) {
         setOpen(false);
         toggle.focus();
       }

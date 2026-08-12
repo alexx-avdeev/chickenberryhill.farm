@@ -1,31 +1,28 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
 ---
 
 <BaseLayout title="Page not found" description="That page isn't on the hill.">
-  <section class="shell shell--prose notfound center">
-    <p class="eyebrow">404</p>
-    <h1 class="display-md measure-16">That page wandered off.</h1>
-    <p class="notfound__body">
+  <section
+    class="mx-auto max-w-copy px-[18px] pt-30 pb-35 text-center md:px-8"
+  >
+    <p
+      class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+    >
+      404
+    </p>
+    <h1
+      class="mx-auto max-w-[16ch] font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+    >
+      That page wandered off.
+    </h1>
+    <p class="mx-auto mt-5 max-w-[44ch] text-[18px] leading-[1.6] text-ink-soft">
       It happens around here. Try the farm stand or head back to the beginning.
     </p>
-    <div class="btn-row">
-      <a href="/products/" class="btn btn--primary">Shop the farm</a>
-      <a href="/" class="btn btn--outline">Back home →</a>
+    <div class="mt-9 flex flex-wrap justify-center gap-[14px]">
+      <Button href="/products/">Shop the farm</Button>
+      <Button href="/" variant="outline">Back home →</Button>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .notfound {
-    padding-block: 120px 140px;
-  }
-
-  .notfound__body {
-    margin: 20px auto 0;
-    max-width: 44ch;
-    font-size: 18px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-</style>

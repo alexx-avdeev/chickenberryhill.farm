@@ -1,120 +1,138 @@
+@import "tailwindcss";
+
 /* ==========================================================================
-   ChickenBerry Hill Farm — design tokens & base styles
+   ChickenBerry Hill Farm — design tokens
+
+   Everything below is exposed to Tailwind as utilities: a `--color-berry`
+   token gives you `bg-berry` / `text-berry` / `border-berry`, a
+   `--container-copy` token gives you `max-w-copy`, and so on. Add a token
+   here rather than reaching for an arbitrary value in markup — the point is
+   that the palette stays in one place.
+
    Palette is oklch throughout, straight from the design.
    ========================================================================== */
 
-:root {
+@theme {
   /* Surfaces */
-  --bg: oklch(0.99 0.006 95); /* warm cream page background */
-  --surface-tint: oklch(0.975 0.01 85); /* banded sections */
-  --surface-placeholder: oklch(0.94 0.008 85); /* empty image wells */
-  --surface-dark: oklch(0.25 0.012 60); /* CTA band, dark buttons */
-  --surface-dark-hover: oklch(0.35 0.015 60);
+  --color-bg: oklch(0.99 0.006 95); /* warm cream page background */
+  --color-bg-hover: oklch(0.92 0.01 80); /* light button, hovered */
+  --color-tint: oklch(0.975 0.01 85); /* banded sections */
+  --color-well: oklch(0.94 0.008 85); /* empty image wells */
+  --color-dark: oklch(0.25 0.012 60); /* CTA band, dark buttons */
+  --color-dark-hover: oklch(0.35 0.015 60);
 
   /* Ink */
-  --ink: oklch(0.25 0.012 60);
-  --ink-body: oklch(0.3 0.012 60);
-  --ink-muted: oklch(0.4 0.015 60);
-  --ink-soft: oklch(0.5 0.02 60);
-  --ink-softer: oklch(0.52 0.02 60);
-  --ink-faint: oklch(0.6 0.015 70);
-  --ink-on-dark: oklch(0.99 0.006 95);
-  --ink-on-dark-soft: oklch(0.82 0.01 80);
+  --color-ink: oklch(0.25 0.012 60);
+  --color-ink-body: oklch(0.3 0.012 60);
+  --color-ink-muted: oklch(0.4 0.015 60);
+  --color-ink-quiet: oklch(0.42 0.015 60);
+  --color-ink-mid: oklch(0.45 0.015 60);
+  --color-ink-soft: oklch(0.5 0.02 60);
+  --color-ink-softer: oklch(0.52 0.02 60);
+  --color-ink-faint: oklch(0.6 0.015 70);
+  --color-ink-on-dark: oklch(0.99 0.006 95);
+  --color-ink-on-dark-soft: oklch(0.82 0.01 80);
 
   /* Accents */
-  --green: oklch(0.5 0.07 150); /* links, eyebrows */
-  --green-hover: oklch(0.45 0.09 150);
-  --green-tint: oklch(0.97 0.02 150);
-  --green-border: oklch(0.85 0.06 150);
-  --berry: oklch(0.55 0.15 25); /* primary buttons, logo mark */
-  --berry-hover: oklch(0.5 0.16 25);
+  --color-green: oklch(0.5 0.07 150); /* links, eyebrows */
+  --color-green-hover: oklch(0.45 0.09 150);
+  --color-green-tint: oklch(0.97 0.02 150);
+  --color-green-border: oklch(0.85 0.06 150);
+  --color-berry: oklch(0.55 0.15 25); /* primary buttons, logo mark */
+  --color-berry-hover: oklch(0.5 0.16 25);
 
-  /* Lines */
-  --border: oklch(0.9 0.008 85);
-  --border-strong: oklch(0.85 0.01 80);
-  --border-hover: oklch(0.7 0.02 60);
-  --border-dashed: oklch(0.82 0.01 80);
+  /* Lines. `line` rather than `border` so the utilities read `border-line`
+     instead of the tongue-twisting `border-border`. */
+  --color-line: oklch(0.9 0.008 85);
+  --color-line-strong: oklch(0.85 0.01 80);
+  --color-line-strong-hover: oklch(0.6 0.02 60); /* outline button, hovered */
+  --color-line-hover: oklch(0.7 0.02 60);
+  --color-line-dashed: oklch(0.82 0.01 80);
 
   /* Nav active page: underlined on desktop, tinted in the stacked mobile menu */
-  --nav-underline: oklch(0.72 0.02 60);
-  --nav-active-tint: oklch(0.96 0.008 85);
+  --color-nav-underline: oklch(0.72 0.02 60);
+  --color-nav-active-tint: oklch(0.96 0.008 85);
 
   /* Hero carousel dots — the dark surface at full strength and at 30% */
-  --carousel-dot: oklch(0.35 0.015 60);
-  --carousel-dot-idle: oklch(0.35 0.015 60 / 0.3);
+  --color-dot: oklch(0.35 0.015 60);
+  --color-dot-idle: oklch(0.35 0.015 60 / 0.3);
 
   /* Type */
   --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
   --font-display: "Newsreader", Georgia, serif;
 
-  /* Layout */
-  --page-max: 1120px;
-  --prose-max: 820px;
-  --gutter: 32px;
-  --gutter-mobile: 18px;
+  /* Layout widths — `max-w-page`, `max-w-copy`, `max-w-narrow`, `max-w-note`.
+     Deliberately *not* named `prose`: Tailwind ships a built-in `max-w-prose`
+     (65ch) that isn't part of the `--container-*` namespace, so a token by that
+     name is silently shadowed rather than overriding it. */
+  --container-page: 1120px;
+  --container-copy: 820px;
+  --container-narrow: 680px;
+  --container-note: 1000px;
+
+  /* Breakpoints, overridden to the three the design actually uses. Written as
+     the first pixel *above* each of the design's `max-width` queries, so
+     `max-sm:` is ≤480px, `max-md:` is ≤720px and `max-lg:` is ≤900px — the
+     originals exactly. `md:` is therefore the desktop nav threshold. */
+  --breakpoint-sm: 481px;
+  --breakpoint-md: 721px;
+  --breakpoint-lg: 901px;
+
+  /* Radii. 12px and 24px are omitted because Tailwind's own `rounded-xl` and
+     `rounded-3xl` already land on them exactly. */
+  --radius-tile: 20px;
+  --radius-card: 26px;
+  --radius-panel: 28px;
+}
+
+/* Not a Tailwind namespace — read by the swipe panel and the mobile menu,
+   both of which have to line up with the sticky header's `h-14`. */
+:root {
   --nav-height: 56px;
-
-  /* Radii */
-  --radius-sm: 12px;
-  --radius-md: 20px;
-  --radius-lg: 26px;
-  --radius-xl: 28px;
-  --radius-pill: 100px;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: var(--green);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--green-hover);
-}
-
-::selection {
-  background: oklch(0.9 0.05 60);
-}
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-input,
-textarea,
-select {
-  font-family: inherit;
-}
-
-@media (prefers-reduced-motion: reduce) {
+@layer base {
+  /* Preflight sets `line-height: 1.5` on the root. The design was drawn against
+     the browser default, and every block that wanted a specific leading already
+     says so with a `leading-*` utility — so inheriting 1.5 silently loosened
+     headings, the eyebrows, nav links, prices and the footer. Put it back. */
   html {
-    scroll-behavior: auto;
+    line-height: normal;
   }
 
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  /* Preflight leaves anchors inheriting their parent's colour; the farm's
+     links are green unless a component says otherwise. */
+  a {
+    color: var(--color-green);
+  }
+
+  a:hover {
+    color: var(--color-green-hover);
+  }
+
+  ::selection {
+    background: oklch(0.9 0.05 60);
+  }
+
+  /* The design had no visible focus ring; this keeps it keyboard-usable. */
+  :focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -133,6 +151,9 @@ select {
 
    Not Baseline: Chrome and Safari honour it, Firefox ignores the at-rule
    entirely (no error) and keeps the previous behaviour.
+
+   These stay hand-written: `view-transition-name` has no Tailwind utility, and
+   the names have to match across two documents.
    -------------------------------------------------------------------------- */
 
 @view-transition {
@@ -140,11 +161,11 @@ select {
 }
 
 /* Only the page content should cross-fade; the chrome around it stays put. */
-.nav {
+[data-site-nav] {
   view-transition-name: site-nav;
 }
 
-.footer {
+[data-site-footer] {
   view-transition-name: site-footer;
 }
 
@@ -163,6 +184,9 @@ select {
    sticky header, covering the viewport, and is moved in from whichever side
    the finger came from. Only the content moves — the header and footer stay
    where they are.
+
+   Hand-written because the element is built in JS (`panel.className =
+   "swipe-panel"`), so there is no markup for utilities to live on.
    -------------------------------------------------------------------------- */
 
 .swipe-panel {
@@ -173,7 +197,7 @@ select {
   bottom: 0;
   z-index: 40;
   overflow: hidden;
-  background: var(--bg);
+  background: var(--color-bg);
   will-change: transform;
   /* The neighbour is a preview: it must not swallow taps mid-drag. */
   pointer-events: none;
@@ -189,203 +213,4 @@ html.is-swiping body {
 
 html.is-swiping main {
   will-change: transform;
-}
-
-/* --------------------------------------------------------------------------
-   Layout primitives
-   -------------------------------------------------------------------------- */
-
-.shell {
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding-inline: var(--gutter);
-}
-
-.shell--prose {
-  max-width: var(--prose-max);
-}
-
-.shell--narrow {
-  max-width: 680px;
-}
-
-.band {
-  background: var(--surface-tint);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.center {
-  text-align: center;
-}
-
-/* --------------------------------------------------------------------------
-   Type
-   -------------------------------------------------------------------------- */
-
-.eyebrow {
-  margin: 0 0 20px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--green);
-}
-
-.display-xl {
-  margin: 0 auto;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(44px, 7vw, 88px);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-.display-lg {
-  margin: 0 auto;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(40px, 6vw, 72px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-}
-
-.display-md {
-  /* `auto` matters: paired with a `measure-*` cap the box has to centre
-     itself. `text-align: center` only centres the text inside it. */
-  margin: 0 auto;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.15;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-}
-
-.display-sm {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 22px;
-  color: var(--ink);
-}
-
-.lede {
-  margin: 28px auto 0;
-  max-width: 52ch;
-  font-size: clamp(17px, 2vw, 21px);
-  line-height: 1.55;
-  color: var(--ink-soft);
-}
-
-.measure-14 {
-  max-width: 14ch;
-}
-
-.measure-16 {
-  max-width: 16ch;
-}
-
-.measure-18 {
-  max-width: 18ch;
-}
-
-/* --------------------------------------------------------------------------
-   Buttons
-   -------------------------------------------------------------------------- */
-
-.btn {
-  display: inline-block;
-  padding: 14px 28px;
-  border-radius: var(--radius-pill);
-  font-size: 15px;
-  font-weight: 600;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.btn--primary {
-  background: var(--berry);
-  color: var(--ink-on-dark);
-}
-
-.btn--primary:hover {
-  background: var(--berry-hover);
-  color: var(--ink-on-dark);
-}
-
-.btn--outline {
-  border-color: var(--border-strong);
-  color: var(--ink);
-}
-
-.btn--outline:hover {
-  border-color: oklch(0.6 0.02 60);
-  color: var(--ink);
-}
-
-.btn--dark {
-  background: var(--surface-dark);
-  color: var(--ink-on-dark);
-  padding: 15px 32px;
-}
-
-.btn--dark:hover {
-  background: var(--surface-dark-hover);
-  color: var(--ink-on-dark);
-}
-
-.btn--light {
-  background: var(--bg);
-  color: var(--ink);
-}
-
-.btn--light:hover {
-  background: oklch(0.92 0.01 80);
-  color: var(--ink);
-}
-
-.btn--small {
-  padding: 10px 20px;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
-.btn-row {
-  margin-top: 36px;
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.text-link {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-/* --------------------------------------------------------------------------
-   Focus — the design had no visible focus ring; this keeps it keyboard-usable
-   -------------------------------------------------------------------------- */
-
-:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* --------------------------------------------------------------------------
-   Mobile
-   -------------------------------------------------------------------------- */
-
-@media (max-width: 720px) {
-  .shell {
-    padding-inline: var(--gutter-mobile);
-  }
 }

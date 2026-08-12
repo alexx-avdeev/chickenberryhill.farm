@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
 import HeroCarousel from "../components/HeroCarousel.astro";
 import { site, animals, products } from "../data/site";
@@ -7,56 +8,82 @@ import { site, animals, products } from "../data/site";
 
 <BaseLayout title={site.name}>
   <!-- HERO -->
-  <section class="shell hero">
-    <p class="eyebrow">{site.location}</p>
-    <h1 class="display-xl measure-14">
+  <section class="mx-auto max-w-page px-[18px] pt-24 pb-18 text-center md:px-8">
+    <p
+      class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+    >
+      {site.location}
+    </p>
+    <h1
+      class="mx-auto max-w-[14ch] font-display text-[clamp(44px,7vw,88px)] leading-[1.02] font-normal tracking-[-0.02em] text-ink"
+    >
       Raised with care, right here on the hill.
     </h1>
-    <p class="lede">
+    <p
+      class="mx-auto mt-7 max-w-[52ch] text-[clamp(17px,2vw,21px)] leading-[1.55] text-ink-soft"
+    >
       A small family farm raising goats, sheep, rabbits, geese, chicken, and
       quail — and selling honest chicken, lamb, and quail eggs to our neighbors.
     </p>
-    <div class="btn-row">
-      <a href="/products/" class="btn btn--primary">Shop the farm</a>
-      <a href="/about/" class="btn btn--outline">Our story →</a>
+    <div class="mt-9 flex flex-wrap justify-center gap-[14px]">
+      <Button href="/products/">Shop the farm</Button>
+      <Button href="/about/" variant="outline">Our story →</Button>
     </div>
   </section>
 
   <!-- HERO CAROUSEL -->
-  <section class="shell hero-image">
+  <section class="mx-auto mb-10 max-w-page px-[18px] md:px-8">
     <HeroCarousel />
   </section>
 
   <!-- STORY TEASER -->
-  <section class="shell shell--prose story center">
-    <h2 class="display-md">We know every animal by name.</h2>
-    <p class="story__body">
+  <section class="mx-auto max-w-copy px-[18px] py-20 text-center md:px-8">
+    <h2
+      class="mx-auto font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+    >
+      We know every animal by name.
+    </h2>
+    <p class="mx-auto mt-6 max-w-[56ch] text-[18px] leading-[1.6] text-ink-soft">
       ChickenBerry Hill started as a family dream and grew into a working farm
       on the rolling ground outside Hartsville. We raise our animals slowly and
       kindly, on pasture and open air — the way food is supposed to be made.
     </p>
-    <a href="/about/" class="text-link story__link">Read our story →</a>
+    <a href="/about/" class="mt-[26px] inline-block text-[15px] font-semibold"
+      >Read our story →</a
+    >
   </section>
 
   <!-- WHAT WE RAISE -->
-  <section class="band">
-    <div class="shell raise">
-      <div class="center raise__head">
-        <p class="eyebrow">The herd &amp; flock</p>
-        <h2 class="display-md">What we raise</h2>
+  <section class="border-y border-line bg-tint">
+    <div class="mx-auto max-w-page px-[18px] py-20 md:px-8">
+      <div class="mb-12 text-center">
+        <p
+          class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+        >
+          The herd &amp; flock
+        </p>
+        <h2
+          class="mx-auto font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+        >
+          What we raise
+        </h2>
       </div>
-      <ul class="raise__grid">
+      {/* Explicit column counts rather than auto-fit: with six animals,
+          auto-fit leaves a single orphan tile on its own row at desktop. */}
+      <ul class="grid grid-cols-6 gap-5 max-lg:grid-cols-3 max-sm:grid-cols-2">
         {
           animals.map((animal) => (
-            <li class="raise__item">
+            <li class="text-center">
               <Photo
                 src={animal.image}
                 alt={animal.name}
                 label={animal.name}
                 aspect="1 / 1"
-                radius="var(--radius-md)"
+                radius="var(--radius-tile)"
               />
-              <p class="raise__name">{animal.name}</p>
+              <p class="mt-3.5 text-[16px] font-semibold text-ink">
+                {animal.name}
+              </p>
             </li>
           ))
         }
@@ -65,19 +92,32 @@ import { site, animals, products } from "../data/site";
   </section>
 
   <!-- PRODUCTS HIGHLIGHT -->
-  <section class="shell shop">
-    <div class="shop__head">
+  <section class="mx-auto max-w-page px-[18px] py-22 md:px-8">
+    <div class="mb-11 flex flex-wrap items-end justify-between gap-6">
       <div>
-        <p class="eyebrow">From our farm</p>
-        <h2 class="display-md">Fresh &amp; for sale</h2>
+        <p
+          class="mb-5 text-[13px] font-semibold tracking-[0.14em] text-green uppercase"
+        >
+          From our farm
+        </p>
+        <h2
+          class="font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+        >
+          Fresh &amp; for sale
+        </h2>
       </div>
-      <a href="/products/" class="text-link">See all products →</a>
+      <a href="/products/" class="text-[15px] font-semibold"
+        >See all products →</a
+      >
     </div>
-    <ul class="shop__grid">
+    <ul class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
       {
         products.map((product) => (
           <li>
-            <a href="/products/" class="shop__card">
+            <a
+              href="/products/"
+              class="block h-full overflow-hidden rounded-panel border border-line bg-bg transition-colors hover:border-line-hover"
+            >
               <Photo
                 src={product.image}
                 alt={product.name}
@@ -85,10 +125,16 @@ import { site, animals, products } from "../data/site";
                 aspect="4 / 3"
                 radius="0"
               />
-              <div class="shop__body">
-                <h3 class="display-sm">{product.name}</h3>
-                <p class="shop__desc">{product.teaser}</p>
-                <p class="shop__price">{product.teaserPrice}</p>
+              <div class="px-6 pt-[22px] pb-[26px]">
+                <h3 class="font-display text-[22px] font-medium text-ink">
+                  {product.name}
+                </h3>
+                <p class="mt-2 text-[15px] leading-[1.5] text-ink-soft">
+                  {product.teaser}
+                </p>
+                <p class="mt-4 text-[14px] font-semibold text-berry">
+                  {product.teaserPrice}
+                </p>
               </div>
             </a>
           </li>
@@ -98,175 +144,22 @@ import { site, animals, products } from "../data/site";
   </section>
 
   <!-- CTA BAND -->
-  <section class="shell cta-wrap">
-    <div class="cta">
-      <h2 class="cta__title measure-18">Come meet your farmers.</h2>
-      <p class="cta__body">
+  <section class="mx-auto mb-22 max-w-page px-[18px] md:px-8">
+    <div
+      class="rounded-panel bg-dark px-8 py-[clamp(48px,7vw,88px)] text-center"
+    >
+      <h2
+        class="mx-auto max-w-[18ch] font-display text-[clamp(28px,4.5vw,48px)] leading-[1.1] font-normal tracking-[-0.015em] text-ink-on-dark"
+      >
+        Come meet your farmers.
+      </h2>
+      <p
+        class="mx-auto mt-5 max-w-[46ch] text-[18px] leading-[1.55] text-ink-on-dark-soft"
+      >
         Place an order, ask a question, or just say hello. We'd love to hear from
         you.
       </p>
-      <a href="/contact/" class="btn btn--light cta__btn">Get in touch</a>
+      <Button href="/contact/" variant="light" class="mt-8">Get in touch</Button>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .hero {
-    padding-block: 96px 72px;
-    text-align: center;
-  }
-
-  .hero-image {
-    margin-bottom: 40px;
-  }
-
-  /* Story teaser */
-  .story {
-    padding-block: 80px;
-  }
-
-  .story__body {
-    margin: 24px auto 0;
-    max-width: 56ch;
-    font-size: 18px;
-    line-height: 1.6;
-    color: var(--ink-soft);
-  }
-
-  .story__link {
-    display: inline-block;
-    margin-top: 26px;
-  }
-
-  /* What we raise */
-  .raise {
-    padding-block: 80px;
-  }
-
-  .raise__head {
-    margin-bottom: 48px;
-  }
-
-  /* Explicit column counts rather than auto-fit: with six animals, auto-fit
-     leaves a single orphan tile on its own row at desktop widths. */
-  .raise__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 20px;
-  }
-
-  @media (max-width: 900px) {
-    .raise__grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .raise__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .raise__item {
-    text-align: center;
-  }
-
-  .raise__name {
-    margin: 14px 0 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  /* Products highlight */
-  .shop {
-    padding-block: 88px;
-  }
-
-  .shop__head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-bottom: 44px;
-  }
-
-  .shop__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-  }
-
-  .shop__card {
-    display: block;
-    height: 100%;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    background: var(--bg);
-    transition: border-color 0.15s ease;
-  }
-
-  .shop__card:hover {
-    border-color: var(--border-hover);
-  }
-
-  .shop__body {
-    padding: 22px 24px 26px;
-  }
-
-  .shop__desc {
-    margin: 8px 0 0;
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--ink-soft);
-  }
-
-  .shop__price {
-    margin: 16px 0 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--berry);
-  }
-
-  /* CTA band */
-  .cta-wrap {
-    margin-bottom: 88px;
-  }
-
-  .cta {
-    background: var(--surface-dark);
-    border-radius: var(--radius-xl);
-    padding: clamp(48px, 7vw, 88px) 32px;
-    text-align: center;
-  }
-
-  .cta__title {
-    margin: 0 auto;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(28px, 4.5vw, 48px);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-    color: var(--ink-on-dark);
-  }
-
-  .cta__body {
-    margin: 20px auto 0;
-    max-width: 46ch;
-    font-size: 18px;
-    line-height: 1.55;
-    color: var(--ink-on-dark-soft);
-  }
-
-  .cta__btn {
-    margin-top: 32px;
-  }
-</style>

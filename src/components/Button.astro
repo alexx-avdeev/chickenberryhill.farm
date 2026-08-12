@@ -1,0 +1,70 @@
+---
+/**
+ * The design's four button treatments.
+ *
+ * These were the one thing in the migration worth keeping as a component: the
+ * same eight utilities appear on ten links across the site, and Tailwind's own
+ * answer to that is a component rather than a class in a stylesheet.
+ *
+ * Every variant restates its hover colour because the base `a:hover` rule turns
+ * links green — see global.css.
+ */
+
+interface Props {
+  href: string;
+  variant?: "primary" | "outline" | "dark" | "light";
+  /** The compact size used by the product cards' Reserve links. */
+  small?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  small = false,
+  class: extra,
+} = Astro.props;
+
+/**
+ * Each variant owns its border colour. The transparent border is deliberately
+ * not hoisted into the base: `border-transparent` and `border-line-strong` are
+ * both border-colour utilities, so the winner would come down to Tailwind's
+ * output order rather than the order they're listed here — and transparent
+ * happens to sort last, which quietly erases the outline button's border.
+ */
+const variants = {
+  primary:
+    "border-transparent bg-berry text-ink-on-dark hover:bg-berry-hover hover:text-ink-on-dark",
+  outline:
+    "border-line-strong text-ink hover:border-line-strong-hover hover:text-ink",
+  dark: "border-transparent bg-dark text-ink-on-dark hover:bg-dark-hover hover:text-ink-on-dark",
+  light: "border-transparent bg-bg text-ink hover:bg-bg-hover hover:text-ink",
+};
+
+/**
+ * Size owns both the padding and the font size. Neither may be hoisted into the
+ * base string for the same reason as the border above: `text-[15px]` and
+ * `text-[14px]` are the same property, so listing one as a "default" and the
+ * other as an "override" just defers to Tailwind's output order — which puts
+ * 15px last and silently inflates the small button.
+ *
+ * `dark` sits a touch larger than the rest; `small` is smaller than both.
+ */
+const sizing = small
+  ? "px-5 py-2.5 text-[14px] whitespace-nowrap"
+  : variant === "dark"
+    ? "px-8 py-[15px] text-[15px]"
+    : "px-7 py-3.5 text-[15px]";
+---
+
+<a
+  href={href}
+  class:list={[
+    "inline-block rounded-full border font-semibold transition-colors",
+    sizing,
+    variants[variant],
+    extra,
+  ]}
+>
+  <slot />
+</a>

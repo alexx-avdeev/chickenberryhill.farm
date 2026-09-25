@@ -24,13 +24,5 @@
   "routes": [
     { "pattern": "chickenberryhill.farm", "custom_domain": true },
     { "pattern": "www.chickenberryhill.farm", "custom_domain": true }
-  ],
-
-  // GA4 measurement ID. The value is a Worker secret, not stored here.
-  // Listing it is what makes `wrangler deploy` carry the secret onto the new
-  // version. Without this, deploy publishes the script with the secret
-  // removed, and the tag is never injected.
-  "secrets": {
-    "required": ["GA_MEASUREMENT_ID"]
-  }
+  ]
 }

@@ -32,6 +32,26 @@ const animalByFile = new Map(
  */
 const animalSizes =
   "(max-width: 480px) calc((100vw - 56px) / 2), (max-width: 720px) calc((100vw - 76px) / 3), (max-width: 900px) calc((100vw - 104px) / 3), calc((min(100vw, 1120px) - 164px) / 6)";
+
+const productPhotos = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/products/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const productByFile = new Map(
+  Object.entries(productPhotos).map(([filePath, mod]) => [
+    filePath.split("/").pop() ?? filePath,
+    mod.default,
+  ]),
+);
+
+/**
+ * Home product cards: one column up to 720px, two after that. The widest
+ * card is the one-column layout at 720px (~684px), so `maxWidth` 1440 is a
+ * 2× image there and more than enough everywhere else.
+ */
+const productSizes =
+  "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 88px) / 2)";
 ---
 
 <BaseLayout title={site.name}>
@@ -51,7 +71,7 @@ const animalSizes =
       class="mx-auto mt-7 max-w-[52ch] text-[clamp(17px,2vw,21px)] leading-[1.55] text-ink-soft"
     >
       A small family farm raising goats, sheep, rabbits, geese, chicken, and
-      quail — and selling honest chicken, lamb, and quail eggs to our neighbors.
+      quail — and selling honest chicken, lamb, rabbit, and quail eggs to our neighbors.
     </p>
     <div class="mt-9 flex flex-wrap justify-center gap-[14px]">
       <Button href="/products/">Shop the farm</Button>
@@ -140,7 +160,9 @@ const animalSizes =
         >See all products →</a
       >
     </div>
-    <ul class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
+    {/* Two columns, not auto-fit: four products would leave a single
+        orphan on the last row. */}
+    <ul class="grid grid-cols-2 gap-6 max-md:grid-cols-1">
       {
         products.map((product) => (
           <li>
@@ -149,11 +171,13 @@ const animalSizes =
               class="block h-full overflow-hidden rounded-panel border border-line bg-bg transition-colors hover:border-line-hover"
             >
               <Photo
-                src={product.image}
-                alt={product.name}
+                image={productByFile.get(product.file) ?? null}
+                alt={product.alt}
                 label={product.name}
                 aspect="4 / 3"
                 radius="0"
+                maxWidth={1440}
+                sizes={productSizes}
               />
               <div class="px-6 pt-[22px] pb-[26px]">
                 <h3 class="font-display text-[22px] font-medium text-ink">

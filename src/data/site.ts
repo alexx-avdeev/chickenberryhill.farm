@@ -14,7 +14,7 @@ export const site = {
   instagram: "https://www.instagram.com/chickenberry_hill_farm",
   instagramHandle: "@chickenberry_hill_farm",
   description:
-    "A small family farm in Hartsville, Tennessee raising goats, sheep, rabbits, geese, chicken, and quail — selling pasture chicken, lamb, and quail eggs to our neighbors.",
+    "A small family farm in Hartsville, Tennessee raising goats, sheep, rabbits, geese, chicken, and quail — selling pasture chicken, lamb, rabbit, and quail eggs to our neighbors.",
 } as const;
 
 export const navLinks = [
@@ -110,9 +110,18 @@ export type Product = {
   tag: string;
   /** Which accent the availability pill uses. */
   tagTone: "green" | "berry";
-  image: string | null;
+  /** Filename in `src/assets/products/`. Masters are cropped to 4:3. */
+  file: string;
+  alt: string;
 };
 
+/**
+ * What's for sale. Shown on the home page, the products page, and as reserve
+ * links on the contact page.
+ *
+ * `file` is looked for in `src/assets/products/`. A missing file renders the
+ * named placeholder instead.
+ */
 export const products: Product[] = [
   {
     slug: "pasture-chicken",
@@ -124,7 +133,8 @@ export const products: Product[] = [
     teaserPrice: "Seasonal · inquire for pricing",
     tag: "Seasonal",
     tagTone: "green",
-    image: null,
+    file: "chicken.jpg",
+    alt: "A whole raw chicken on a wooden cutting board.",
   },
   {
     slug: "lamb",
@@ -136,7 +146,21 @@ export const products: Product[] = [
     teaserPrice: "Seasonal · inquire for pricing",
     tag: "Seasonal",
     tagTone: "green",
-    image: null,
+    file: "lamb.jpg",
+    alt: "A raw lamb chop on a wooden cutting board.",
+  },
+  {
+    slug: "rabbit",
+    name: "Rabbit",
+    teaser: "Whole rabbits from our own hutches — mild, lean, and raised in small batches.",
+    description:
+      "Whole rabbits raised in our own hutches. Mild, lean, and nothing added. Sold fresh in small batches — reserve ahead.",
+    price: "Inquire for pricing",
+    teaserPrice: "Seasonal · inquire for pricing",
+    tag: "Seasonal",
+    tagTone: "green",
+    file: "rabbit.jpg",
+    alt: "A whole raw rabbit on a wooden cutting board.",
   },
   {
     slug: "quail-eggs",
@@ -148,7 +172,8 @@ export const products: Product[] = [
     teaserPrice: "By the dozen · in stock",
     tag: "In stock",
     tagTone: "berry",
-    image: null,
+    file: "quail-eggs.jpg",
+    alt: "A pile of speckled quail eggs, some pale blue and some cream with brown spots.",
   },
 ];
 

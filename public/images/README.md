@@ -43,6 +43,7 @@ from `src/assets/` instead, so they go through the pipeline above.
 | `src/assets/about-lead.jpg` | About page lead photo        |
 | `src/assets/hero/hero-*.jpg`| Home hero carousel           |
 | `src/assets/home/*`         | Home "What we raise" tiles   |
+| `src/assets/products/*`     | Product cards                |
 
 `<Photo />` checks at build time whether the file it points at actually exists
 in `public/`. If it doesn't, it renders the dashed placeholder and logs a

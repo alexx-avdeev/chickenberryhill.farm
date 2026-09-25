@@ -10,11 +10,32 @@ const tagTone = {
   green: "text-green",
   berry: "text-berry",
 };
+
+// Matched to `products` by filename. A missing file falls through to the
+// named placeholder rather than failing the build.
+const productPhotos = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/products/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const productByFile = new Map(
+  Object.entries(productPhotos).map(([filePath, mod]) => [
+    filePath.split("/").pop() ?? filePath,
+    mod.default,
+  ]),
+);
+
+/**
+ * One column up to 720px, two after that, inside the 1120px shell (32px
+ * padding, one 28px gap). Same width cap as the home cards.
+ */
+const productSizes =
+  "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 92px) / 2)";
 ---
 
 <BaseLayout
   title="Products"
-  description="Pasture-raised chicken, grass-fed lamb, and fresh quail eggs from ChickenBerry Hill Farm in Hartsville, Tennessee."
+  description="Pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs from ChickenBerry Hill Farm in Hartsville, Tennessee."
 >
   <!-- HEADER -->
   <section
@@ -40,16 +61,21 @@ const tagTone = {
 
   <!-- PRODUCTS -->
   <section class="mx-auto max-w-page px-[18px] pt-4 pb-10 md:px-8">
-    <ul class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-7">
+    {/* Two columns, not auto-fit: four products would leave a single
+        orphan on the last row. */}
+    <ul class="grid grid-cols-2 gap-7 max-md:grid-cols-1">
       {
-        products.map((product) => (
+        products.map((product, i) => (
           <li class="flex flex-col overflow-hidden rounded-card border border-line bg-bg">
             <Photo
-              src={product.image}
-              alt={product.name}
+              image={productByFile.get(product.file) ?? null}
+              alt={product.alt}
               label={product.name}
               aspect="4 / 3"
               radius="0"
+              maxWidth={1440}
+              sizes={productSizes}
+              eager={i === 0}
             >
               <span
                 class:list={[
@@ -88,9 +114,9 @@ const tagTone = {
       class="rounded-tile border border-dashed border-line-dashed bg-tint px-9 py-8 text-center"
     >
       <p class="text-[16px] leading-[1.6] text-ink-quiet">
-        Not sure what's in stock right now? Seasonal items like chicken and lamb
-        are raised in batches. Send us a note and we'll tell you exactly what's
-        available and when.
+        Not sure what's in stock right now? Seasonal items like chicken, lamb,
+        and rabbit are raised in batches. Send us a note and we'll tell you
+        exactly what's available and when.
       </p>
     </div>
   </section>

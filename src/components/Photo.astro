@@ -48,11 +48,13 @@ interface Props {
   /** Widths the layout renders this at, for the browser to pick from. */
   sizes?: string;
   /**
-   * Largest variant to generate. The default ladder tops out at 2112 so a 2x
-   * screen gets a true 2x image at the 1056px shell — correct, but for big
-   * photographs it roughly doubles the bytes for detail that isn't visible at
-   * arm's length. Lower it per-image where weight matters more than pixel
-   * peeping; 1440 is ~1.36x and holds up on a dense display.
+   * Largest variant to generate, including the `<img>` fallback. The default
+   * ladder tops out at 2112 so a 2x screen gets a true 2x image at the 1056px
+   * shell — correct, but for big photographs it roughly doubles the bytes for
+   * detail that isn't visible at arm's length. Lower it per-image where weight
+   * matters more than pixel peeping; 1440 is ~1.36x and holds up on a dense
+   * display. Without this cap the fallback `src` is the original master, which
+   * is what a browser downloads when it doesn't use the srcset.
    */
   maxWidth?: number;
   /**
@@ -134,6 +136,7 @@ const imgClass =
       <Picture
         src={image}
         alt={alt}
+        width={ceiling}
         class={imgClass}
         formats={["avif", "webp"]}
         fallbackFormat="jpeg"

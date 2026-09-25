@@ -30,21 +30,19 @@ Files here are served from the site root, so `public/images/goats.jpg` is
 referenced as `/images/goats.jpg`:
 
 ```ts
-export const animals = [
-  { name: "Goats", image: "/images/goats.jpg" },
-  ...
-];
+image: "/images/goats.jpg",
 ```
 
-The two full-bleed photos (the home hero and the About lead) are set directly
-on the page — `src/pages/index.astro` and `src/pages/about.astro`. Add a `src`
-and an `alt` to their `<Photo />` tags.
+The home hero, the About lead, and the "What we raise" tiles are imported
+from `src/assets/` instead, so they go through the pipeline above.
 
 ## In place
 
-| File                        | Used by               |
-| --------------------------- | --------------------- |
-| `src/assets/about-lead.jpg` | About page lead photo |
+| File                        | Used by                      |
+| --------------------------- | ---------------------------- |
+| `src/assets/about-lead.jpg` | About page lead photo        |
+| `src/assets/hero/hero-*.jpg`| Home hero carousel           |
+| `src/assets/home/*`         | Home "What we raise" tiles   |
 
 `<Photo />` checks at build time whether the file it points at actually exists
 in `public/`. If it doesn't, it renders the dashed placeholder and logs a

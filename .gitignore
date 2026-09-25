@@ -12,8 +12,6 @@ npm-debug.log*
 # environment
 .env
 .env.production
-# Local Worker secrets for `wrangler dev` / `npm run preview`.
-.dev.vars
 
 # cloudflare
 .wrangler/

@@ -39,6 +39,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
       rel="stylesheet"
     />
+
+    <script
+      async
+      src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`}
+    ></script>
+    <script is:inline define:vars={{ gaId: site.gaMeasurementId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', gaId);
+    </script>
   </head>
   <body class="bg-bg font-sans text-ink antialiased">
     <div class="min-h-screen">
@@ -51,8 +63,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <SwipeNavigation />
     <!-- Swipes replace <main> without a new document, so the tag in <head>
          never sees them. It is still loaded from the first full page view;
-         this only sends the later ones. No-ops when the Worker hasn't
-         injected gtag (local dev, or the measurement ID isn't set). -->
+         this only sends the later ones. -->
     <script>
       document.addEventListener("page:swapped", () => {
         const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;

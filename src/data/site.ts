@@ -13,6 +13,8 @@ export const site = {
   email: "contact@chickenberryhill.farm",
   instagram: "https://www.instagram.com/chickenberry_hill_farm",
   instagramHandle: "@chickenberry_hill_farm",
+  /** GA4 measurement ID. Public by design — it is written into every page. */
+  gaMeasurementId: "G-X26K0SZLYH",
   description:
     "A small family farm in Hartsville, Tennessee raising goats, sheep, rabbits, geese, chicken, and quail — selling pasture chicken, lamb, rabbit, and quail eggs to our neighbors.",
 } as const;

@@ -4,6 +4,34 @@ import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
 import HeroCarousel from "../components/HeroCarousel.astro";
 import { site, animals, products } from "../data/site";
+
+// Matched to `animals` by filename, same idea as the hero carousel. A missing
+// file falls through to the named placeholder rather than failing the build.
+const animalPhotos = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/home/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+
+const animalByFile = new Map(
+  Object.entries(animalPhotos).map(([filePath, mod]) => [
+    filePath.split("/").pop() ?? filePath,
+    mod.default,
+  ]),
+);
+
+/**
+ * What the animal tiles actually render at. A full-bleed `sizes` would make
+ * the browser download a hero-sized file for a square of about 160px.
+ *
+ * 2 columns at ≤480px (18px page padding, one 20px gap),
+ * 3 columns at ≤900px (18px padding up to 720px, 32px after; two gaps),
+ * 6 columns above that, inside the 1120px shell (32px padding, five gaps).
+ *
+ * The biggest tile is about 265px CSS, so `maxWidth` 640 covers a 2× screen
+ * and a 3× phone. Wider variants would be downloaded and then scaled away.
+ */
+const animalSizes =
+  "(max-width: 480px) calc((100vw - 56px) / 2), (max-width: 720px) calc((100vw - 76px) / 3), (max-width: 900px) calc((100vw - 104px) / 3), calc((min(100vw, 1120px) - 164px) / 6)";
 ---
 
 <BaseLayout title={site.name}>
@@ -75,11 +103,13 @@ import { site, animals, products } from "../data/site";
           animals.map((animal) => (
             <li class="text-center">
               <Photo
-                src={animal.image}
-                alt={animal.name}
+                image={animalByFile.get(animal.file) ?? null}
+                alt={animal.alt}
                 label={animal.name}
                 aspect="1 / 1"
                 radius="var(--radius-tile)"
+                maxWidth={640}
+                sizes={animalSizes}
               />
               <p class="mt-3.5 text-[16px] font-semibold text-ink">
                 {animal.name}

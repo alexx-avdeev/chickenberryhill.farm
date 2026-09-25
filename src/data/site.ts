@@ -58,14 +58,44 @@ export const heroSlides = [
   },
 ] as const;
 
-/** The animals on the hill, shown on the home page. */
+/**
+ * The animals on the hill, shown as square tiles on the home page.
+ *
+ * `file` is looked for in `src/assets/home/`. Masters are already 1:1 — the
+ * ratio the tiles render at — so nothing downloaded is thrown away by
+ * `object-fit`. A missing file renders the named placeholder instead.
+ */
 export const animals = [
-  { name: "Goats", image: null },
-  { name: "Sheep", image: null },
-  { name: "Rabbits", image: null },
-  { name: "Geese", image: null },
-  { name: "Chicken", image: null },
-  { name: "Quail", image: null },
+  {
+    name: "Goats",
+    file: "goat.jpeg",
+    alt: "A pale tan nanny goat standing in a dirt pen beside her brown-and-white kid.",
+  },
+  {
+    name: "Sheep",
+    file: "sheep.jpeg",
+    alt: "Two black-faced sheep lying in the grass, one nursing a lamb.",
+  },
+  {
+    name: "Rabbits",
+    file: "rabbit.jpeg",
+    alt: "A grey rabbit resting on the wire floor of a wooden hutch.",
+  },
+  {
+    name: "Geese",
+    file: "geese.jpg",
+    alt: "Two white geese standing in a green pasture.",
+  },
+  {
+    name: "Chicken",
+    file: "chicken.jpeg",
+    alt: "White chickens resting together in the grass beside a wire fence.",
+  },
+  {
+    name: "Quail",
+    file: "quail.jpg",
+    alt: "Speckled quail crowded together on the wire floor of a pen.",
+  },
 ] as const;
 
 export type Product = {

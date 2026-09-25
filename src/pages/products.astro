@@ -28,6 +28,9 @@ const productByFile = new Map(
 /**
  * One column up to 720px, two after that, inside the 1120px shell (32px
  * padding, one 28px gap). Same width cap as the home cards.
+ *
+ * The first two cards are on screen when the page opens. A lazy second
+ * card waits until after layout, so it appears after the rest of the page.
  */
 const productSizes =
   "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 92px) / 2)";
@@ -75,7 +78,8 @@ const productSizes =
               radius="0"
               maxWidth={1440}
               sizes={productSizes}
-              eager={i === 0}
+              eager={i < 2}
+              fetchPriority={i === 0 ? "high" : "auto"}
             >
               <span
                 class:list={[

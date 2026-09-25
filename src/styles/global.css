@@ -144,36 +144,29 @@
    dark Shop pill against the cream background.
 
    `navigation: auto` makes same-origin navigations transition instead of hard
-   cutting.
-
-   The header and footer deliberately do *not* get their own
-   `view-transition-name`. Naming them looks like the way to hold the chrome
-   still, but it is what made the Shop pill blink: a named element is lifted
-   out of normal painting for the duration of the transition, so if the
-   browser abandons the transition partway there is a frame where it simply
-   isn't drawn — and the dark pill is the only high-contrast thing in the bar,
-   so it's the only part you notice.
-
-   Abandoning is not an edge case. Chrome drops a cross-document transition
-   whenever the viewport changes size between the two documents, and on a
-   Retina window whose height is an odd number of device pixels the reported
-   height flips between two values on its own. Measured on this site, three
-   navigations in four were dropped.
-
-   Folded into the page-wide `root` snapshot instead, the header rides along in
-   an image that is identical either side of a navigation, and Chrome's
-   cross-fade uses `plus-lighter` blending — which composites identical pixels
-   to exactly themselves — so it still holds still. If the transition is
-   dropped now, the fallback is an ordinary navigation, which never flashes.
+   cutting. The header and footer get their own transition names so the
+   browser treats each as one continuous element across the two documents
+   rather than folding them into the page-wide cross-fade; because their
+   snapshots are identical either side of a navigation, they simply hold still.
 
    Not Baseline: Chrome and Safari honour it, Firefox ignores the at-rule
    entirely (no error) and keeps the previous behaviour.
 
-   Hand-written because `@view-transition` has no Tailwind utility.
+   These stay hand-written: `view-transition-name` has no Tailwind utility, and
+   the names have to match across two documents.
    -------------------------------------------------------------------------- */
 
 @view-transition {
   navigation: auto;
+}
+
+/* Only the page content should cross-fade; the chrome around it stays put. */
+[data-site-nav] {
+  view-transition-name: site-nav;
+}
+
+[data-site-footer] {
+  view-transition-name: site-footer;
 }
 
 @media (prefers-reduced-motion: reduce) {

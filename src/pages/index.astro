@@ -3,7 +3,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
 import HeroCarousel from "../components/HeroCarousel.astro";
+import { getImage } from "astro:assets";
 import { site, animals, products } from "../data/site";
+import { localBusinessNode } from "../data/schema";
+import heroPasture from "../assets/hero/hero-2.jpg";
 
 // Matched to `animals` by filename, same idea as the hero carousel. A missing
 // file falls through to the named placeholder rather than failing the build.
@@ -52,9 +55,17 @@ const productByFile = new Map(
  */
 const productSizes =
   "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 88px) / 2)";
+
+// The LocalBusiness image: the herd and flock on the pasture (hero slide 2),
+// as a 1200px JPEG with an absolute URL.
+const businessImage = await getImage({ src: heroPasture, width: 1200, format: "jpeg" });
+const businessImageUrl = new URL(businessImage.src, Astro.site).toString();
 ---
 
-<BaseLayout title={`${site.name} — Pasture Chicken & Lamb, Hartsville TN`}>
+<BaseLayout
+  title={`${site.name} — Pasture Chicken & Lamb, Hartsville TN`}
+  jsonLd={localBusinessNode(businessImageUrl)}
+>
   <!-- HERO -->
   <section class="mx-auto max-w-page px-[18px] pt-24 pb-18 text-center md:px-8">
     <p

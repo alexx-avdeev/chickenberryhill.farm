@@ -4,19 +4,49 @@ import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SwipeNavigation from "../components/SwipeNavigation.astro";
 import { site } from "../data/site";
+import {
+  websiteNode,
+  organizationNode,
+  breadcrumbNode,
+  type JsonLdNode,
+} from "../data/schema";
 
 interface Props {
   title: string;
   description?: string;
+  /**
+   * Extra schema.org nodes for this page. They're merged into one @graph
+   * with the sitewide WebSite and Organization. A node whose `@id` matches
+   * a sitewide one replaces it; the homepage uses this to give the
+   * Organization its fuller LocalBusiness form.
+   */
+  jsonLd?: JsonLdNode | JsonLdNode[];
+  /** Leave out the sitewide graph and breadcrumbs (the 404 page). */
+  noJsonLd?: boolean;
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, jsonLd, noJsonLd = false } = Astro.props;
 // A title that already names the farm is used as written (the keyword-rich
 // titles on the main pages); anything else gets the brand appended.
 const pageTitle = title.includes(site.shortName)
   ? title
   : `${title} — ${site.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const pageNodes = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+const overridden = new Set(pageNodes.map((node) => node["@id"]).filter(Boolean));
+const breadcrumb = breadcrumbNode(Astro.url.pathname);
+const graph = noJsonLd
+  ? []
+  : [
+      ...[websiteNode, organizationNode].filter((node) => !overridden.has(node["@id"])),
+      ...pageNodes,
+      ...(breadcrumb ? [breadcrumb] : []),
+    ];
+// Escape "<" so no string value can close the <script> element early.
+const jsonLdText = graph.length
+  ? JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c")
+  : null;
 ---
 
 <!doctype html>
@@ -36,6 +66,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLdText && <script is:inline type="application/ld+json" set:html={jsonLdText} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

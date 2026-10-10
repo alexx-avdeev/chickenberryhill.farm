@@ -16,7 +16,7 @@ export const site = {
   /** GA4 measurement ID. Public by design — it is written into every page. */
   gaMeasurementId: "G-X26K0SZLYH",
   description:
-    "A small family farm in Hartsville, Tennessee raising goats, sheep, rabbits, geese, chicken, and quail — selling pasture chicken, lamb, rabbit, and quail eggs to our neighbors.",
+    "Small family farm in Hartsville, Tennessee selling pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs. On-farm pickup by appointment.",
 } as const;
 
 export const navLinks = [

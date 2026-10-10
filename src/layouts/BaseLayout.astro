@@ -11,7 +11,11 @@ interface Props {
 }
 
 const { title, description = site.description } = Astro.props;
-const pageTitle = title === site.name ? title : `${title} — ${site.name}`;
+// A title that already names the farm is used as written (the keyword-rich
+// titles on the main pages); anything else gets the brand appended.
+const pageTitle = title.includes(site.shortName)
+  ? title
+  : `${title} — ${site.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 

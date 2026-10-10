@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
+import sitemap from "@astrojs/sitemap";
 
 // Fully static build. The output in dist/ is served straight from Cloudflare
 // Workers Static Assets — see wrangler.jsonc.
@@ -14,6 +15,15 @@ export default defineConfig({
   build: {
     format: "directory",
   },
+
+  // Emits sitemap-index.xml + sitemap-0.xml into dist/, with absolute URLs
+  // built from `site` above. The 404 page is not a real destination, so keep
+  // it out.
+  integrations: [
+    sitemap({
+      filter: (page) => !/\/404\/?$/.test(new URL(page).pathname),
+    }),
+  ],
 
   vite: {
     plugins: [tailwindcss()],

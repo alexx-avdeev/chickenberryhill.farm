@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://chickenberryhill.farm/sitemap-index.xml

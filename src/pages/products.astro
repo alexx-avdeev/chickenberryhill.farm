@@ -2,7 +2,9 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/Button.astro";
 import Photo from "../components/Photo.astro";
+import { getImage } from "astro:assets";
 import { products, orderMailto, reserveMailto } from "../data/site";
+import { offerCatalogNode } from "../data/schema";
 
 // Looked up rather than interpolated: Tailwind scans source text for whole
 // class names, so a built-up `text-${tone}` would never be generated.
@@ -34,9 +36,19 @@ const productByFile = new Map(
  */
 const productSizes =
   "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 92px) / 2)";
+
+// Absolute 1200px JPEG URLs for the catalog's offer images.
+const catalogImages: Record<string, string | undefined> = {};
+for (const product of products) {
+  const photo = productByFile.get(product.file);
+  if (!photo) continue;
+  const img = await getImage({ src: photo, width: Math.min(1200, photo.width), format: "jpeg" });
+  catalogImages[product.slug] = new URL(img.src, Astro.site).toString();
+}
 ---
 
 <BaseLayout
+  jsonLd={offerCatalogNode(catalogImages)}
   title="Chicken, Lamb, Rabbit & Quail Eggs — ChickenBerry Hill Farm"
   description="Pasture-raised whole chickens, grass-fed lamb (whole, half, or cuts), whole rabbits, and quail eggs by the dozen from a family farm in Hartsville, TN."
 >

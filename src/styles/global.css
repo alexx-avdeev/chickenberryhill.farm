@@ -58,8 +58,10 @@
   --color-dot-idle: oklch(0.35 0.015 60 / 0.3);
 
   /* Type */
-  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
-  --font-display: "Newsreader", Georgia, serif;
+  /* Self-hosted through Astro's Fonts API; the variables (and their
+     metric-matched fallbacks) come from <Font> in BaseLayout.astro. */
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-newsreader);
 
   /* Layout widths — `max-w-page`, `max-w-copy`, `max-w-narrow`, `max-w-note`.
      Deliberately *not* named `prose`: Tailwind ships a built-in `max-w-prose`

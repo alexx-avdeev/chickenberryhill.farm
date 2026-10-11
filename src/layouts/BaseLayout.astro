@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { Font } from "astro:assets";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import SwipeNavigation from "../components/SwipeNavigation.astro";
@@ -109,23 +110,45 @@ const jsonLdText = graph.length
 
     {jsonLdText && <script is:inline type="application/ld+json" set:html={jsonLdText} />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Both families are used above the fold (nav + hero), so both are
+         preloaded. One variable file each. -->
+    <Font cssVariable="--font-manrope" preload />
+    <Font cssVariable="--font-newsreader" preload />
 
-    <script
-      async
-      src={`https://www.googletagmanager.com/gtag/js?id=${site.gaMeasurementId}`}
-    ></script>
+    <!-- Google Analytics, deferred. The gtag() stub and config are queued
+         right away, so nothing is lost: page_view (and any swipe page_views
+         below) wait in dataLayer. gtag.js itself (~180 KB) is only fetched
+         once the page is idle after load, or on the first interaction if that
+         comes sooner, so it no longer competes with first render. -->
     <script is:inline define:vars={{ gaId: site.gaMeasurementId }}>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       window.gtag = gtag;
       gtag('js', new Date());
       gtag('config', gaId);
+
+      (function () {
+        var loaded = false;
+        var events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+        function load() {
+          if (loaded) return;
+          loaded = true;
+          events.forEach(function (e) { removeEventListener(e, load, true); });
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+          document.head.appendChild(s);
+        }
+        events.forEach(function (e) {
+          addEventListener(e, load, { once: true, passive: true, capture: true });
+        });
+        function whenIdle() {
+          if ('requestIdleCallback' in window) requestIdleCallback(load, { timeout: 3000 });
+          else setTimeout(load, 1500);
+        }
+        if (document.readyState === 'complete') whenIdle();
+        else addEventListener('load', whenIdle, { once: true });
+      })();
     </script>
   </head>
   <body class="bg-bg font-sans text-ink antialiased">
@@ -138,8 +161,8 @@ const jsonLdText = graph.length
     </div>
     <SwipeNavigation />
     <!-- Swipes replace <main> without a new document, so the tag in <head>
-         never sees them. It is still loaded from the first full page view;
-         this only sends the later ones. -->
+         never sees them. gtag() is the queued stub from <head>, so these are
+         delivered even if gtag.js hasn't loaded yet. -->
     <script>
       document.addEventListener("page:swapped", () => {
         const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;

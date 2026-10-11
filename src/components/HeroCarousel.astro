@@ -70,15 +70,17 @@ const slides = heroSlides.map((slide, i) => ({
   }
 
   <div
-    class="absolute bottom-5 left-1/2 z-[2] flex -translate-x-1/2 gap-[9px]"
+    class="absolute bottom-3 left-1/2 z-[2] flex -translate-x-1/2"
   >
     {
       slides.map((slide, i) => (
-        // 8px is below a comfortable tap target; the ::after gives each dot
-        // invisible reach without moving them apart visually.
+        // The button is the 24x24 tap target (WCAG 2.5.8); the visible 8px dot
+        // is its ::before, centred. Buttons sit edge to edge, so the dots are
+        // 24px apart centre to centre (was 17px), and `bottom-3` keeps the dot
+        // row's centre where it was with the old 8px buttons at `bottom-5`.
         <button
           type="button"
-          class="size-2 cursor-pointer rounded-full bg-dot-idle transition-colors duration-400 after:absolute after:size-8 after:-translate-x-3 after:-translate-y-3 after:content-[''] aria-[current=true]:bg-dot"
+          class="flex size-6 cursor-pointer items-center justify-center before:size-2 before:rounded-full before:bg-dot-idle before:transition-colors before:duration-400 before:content-[''] aria-[current=true]:before:bg-dot"
           aria-label={`Photo ${slide.position}`}
           aria-current={i === 0 ? "true" : "false"}
           data-hero-dot

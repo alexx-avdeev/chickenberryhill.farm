@@ -24,6 +24,12 @@ interface Props {
   /** Leave out the sitewide graph and breadcrumbs (the 404 page). */
   noJsonLd?: boolean;
   /**
+   * Keep this page out of search results: emits `robots: noindex` and drops
+   * the canonical and og:url, which would otherwise point at a URL (like
+   * /404/) that doesn't exist as a real page.
+   */
+  noindex?: boolean;
+  /**
    * Share image for this page. Defaults to the sitewide 1200x630 card in
    * public/og/. A root-relative path is resolved against `site`; pass a
    * JPEG at 1200x630 so the width, height and type below stay true.
@@ -39,7 +45,14 @@ const defaultOgImage = {
   type: "image/jpeg",
 };
 
-const { title, description = site.description, jsonLd, noJsonLd = false, ogImage } = Astro.props;
+const {
+  title,
+  description = site.description,
+  jsonLd,
+  noJsonLd = false,
+  noindex = false,
+  ogImage,
+} = Astro.props;
 // A title that already names the farm is used as written (the keyword-rich
 // titles on the main pages); anything else gets the brand appended.
 const pageTitle = title.includes(site.shortName)
@@ -72,7 +85,7 @@ const jsonLdText = graph.length
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
 
@@ -80,7 +93,7 @@ const jsonLdText = graph.length
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:secure_url" content={ogImageUrl} />

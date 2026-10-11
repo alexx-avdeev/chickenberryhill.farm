@@ -54,8 +54,13 @@ const photo = productByFile.get(product.file) ?? null;
 const offerImage = photo
   ? await getImage({ src: photo, width: Math.min(1200, photo.width), format: "jpeg" })
   : null;
+// Astro never upscales, so a source narrower than 1200px (rabbit.jpg is
+// 1132px) gets a smaller crop at the same 1.91:1 ratio; the og:image
+// width/height below report the real size.
+const shareWidth = photo ? Math.min(1200, photo.width) : 1200;
+const shareHeight = Math.round((shareWidth * 630) / 1200);
 const shareImage = photo
-  ? await getImage({ src: photo, width: 1200, height: 630, fit: "cover", format: "jpeg" })
+  ? await getImage({ src: photo, width: shareWidth, height: shareHeight, fit: "cover", format: "jpeg" })
   : null;
 
 const tagTone = {
@@ -82,7 +87,7 @@ const eyebrow = "text-[13px] font-semibold tracking-[0.14em] text-green uppercas
     offerImage ? new URL(offerImage.src, Astro.site).toString() : undefined,
   )}
   ogImage={shareImage
-    ? { src: shareImage.src, alt: product.alt, width: 1200, height: 630, type: "image/jpeg" }
+    ? { src: shareImage.src, alt: product.alt, width: shareWidth, height: shareHeight, type: "image/jpeg" }
     : undefined}
 >
   {/*

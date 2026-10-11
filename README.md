@@ -109,4 +109,4 @@ and point `main` at the generated Worker entry.
 - [ ] Confirm `contact@chickenberryhill.farm` actually receives mail — every
       order and reserve button is a `mailto:` built from `site.email`.
 - [ ] Add photos to `public/images/` and wire them up.
-- [ ] Add an OG share image and reference it from `BaseLayout.astro`.
+- [x] Add an OG share image and reference it from `BaseLayout.astro` (`public/og/default.jpg`).

@@ -19,7 +19,7 @@
  * wrong ones.
  */
 
-import { site, products, navLinks } from "./site";
+import { site, products, navLinks, type Product } from "./site";
 
 export type JsonLdNode = Record<string, unknown>;
 
@@ -86,6 +86,27 @@ export function localBusinessNode(imageUrl?: string): JsonLdNode {
  * as an error in Search Console. An Offer with a name and description is
  * valid schema.org and avoids that.
  */
+/** Each product's own page, and the stable @id of its Offer. */
+export const productPath = (product: Product) => `/products/${product.slug}/`;
+const offerId = (product: Product) => abs(`${productPath(product)}#offer`);
+
+/**
+ * One product as an Offer. The products page lists these in the catalog and
+ * each product page carries its own. They share an @id, so they're the same
+ * node wherever they appear.
+ */
+export function offerNode(product: Product, imageUrl?: string): JsonLdNode {
+  return {
+    "@type": "Offer",
+    "@id": offerId(product),
+    name: product.name,
+    description: product.description,
+    url: abs(productPath(product)),
+    ...(imageUrl ? { image: imageUrl } : {}),
+    offeredBy: { "@id": ids.organization },
+  };
+}
+
 export function offerCatalogNode(imageUrls: Record<string, string | undefined>): JsonLdNode {
   return {
     "@type": "OfferCatalog",
@@ -93,26 +114,32 @@ export function offerCatalogNode(imageUrls: Record<string, string | undefined>):
     name: `${site.name} products`,
     url: abs("/products/"),
     numberOfItems: products.length,
-    itemListElement: products.map((product) => ({
-      "@type": "Offer",
-      name: product.name,
-      description: product.description,
-      url: abs("/products/"),
-      ...(imageUrls[product.slug] ? { image: imageUrls[product.slug] } : {}),
-      offeredBy: { "@id": ids.organization },
-    })),
+    itemListElement: products.map((product) => offerNode(product, imageUrls[product.slug])),
   };
 }
 
-/** Inner pages: Home → this page. The label comes from the nav. */
+/**
+ * Inner pages: Home → this page, with the label taken from the nav. Product
+ * pages get Home → Products → product.
+ */
 export function breadcrumbNode(pathname: string): JsonLdNode | null {
+  const trail: { name: string; href: string }[] = [{ name: "Home", href: "/" }];
   const page = navLinks.find((link) => link.href === pathname);
-  if (!page || page.href === "/") return null;
+  const product = products.find((p) => productPath(p) === pathname);
+  if (page && page.href !== "/") {
+    trail.push({ name: page.label, href: page.href });
+  } else if (product) {
+    trail.push({ name: "Products", href: "/products/" }, { name: product.name, href: productPath(product) });
+  } else {
+    return null;
+  }
   return {
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: abs("/") },
-      { "@type": "ListItem", position: 2, name: page.label, item: abs(page.href) },
-    ],
+    itemListElement: trail.map((crumb, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: crumb.name,
+      item: abs(crumb.href),
+    })),
   };
 }

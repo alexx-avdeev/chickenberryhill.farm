@@ -1,0 +1,241 @@
+---
+/**
+ * One page per product: /products/pasture-chicken/, /products/lamb/, …
+ *
+ * Built from `products` in src/data/site.ts. Everything a page says comes from
+ * that entry or from copy already on the site (contact and products pages), so
+ * adding a product there adds its page, its sitemap entry and its JSON-LD.
+ *
+ * Swipe navigation only pages between the four nav routes, and it ignores
+ * paths it doesn't know (`indexOfPath` returns -1), so it stays inactive here
+ * and links behave normally.
+ */
+import type { GetStaticPaths } from "astro";
+import { getImage } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Button from "../../components/Button.astro";
+import Photo from "../../components/Photo.astro";
+import {
+  site,
+  products,
+  reserveMailto,
+  type Product,
+} from "../../data/site";
+import { offerNode, productPath } from "../../data/schema";
+
+export const getStaticPaths = (() =>
+  products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  product: Product;
+}
+
+const { product } = Astro.props;
+const others = products.filter((p) => p.slug !== product.slug);
+
+// Same lookup as the products page: photos matched by filename.
+const productPhotos = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/products/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+const productByFile = new Map(
+  Object.entries(productPhotos).map(([filePath, mod]) => [
+    filePath.split("/").pop() ?? filePath,
+    mod.default,
+  ]),
+);
+const photo = productByFile.get(product.file) ?? null;
+
+// Absolute 1200px JPEG for the Offer node (same variant the catalog uses),
+// and a 1200x630 crop of the same photo for link previews.
+const offerImage = photo
+  ? await getImage({ src: photo, width: Math.min(1200, photo.width), format: "jpeg" })
+  : null;
+const shareImage = photo
+  ? await getImage({ src: photo, width: 1200, height: 630, fit: "cover", format: "jpeg" })
+  : null;
+
+const tagTone = {
+  green: "text-green",
+  berry: "text-berry",
+};
+
+/** Photo column: full width up to 720px, half the 1120px shell after that. */
+const photoSizes =
+  "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 92px) / 2)";
+/** "More from the farm" cards: three across on desktop, one on mobile. */
+const otherSizes =
+  "(max-width: 720px) calc(100vw - 36px), calc((min(100vw, 1120px) - 112px) / 3)";
+
+const seasonal = product.tag === "Seasonal";
+const eyebrow = "text-[13px] font-semibold tracking-[0.14em] text-green uppercase";
+---
+
+<BaseLayout
+  title={product.seoTitle}
+  description={product.seoDescription}
+  jsonLd={offerNode(
+    product,
+    offerImage ? new URL(offerImage.src, Astro.site).toString() : undefined,
+  )}
+  ogImage={shareImage
+    ? { src: shareImage.src, alt: product.alt, width: 1200, height: 630, type: "image/jpeg" }
+    : undefined}
+>
+  {/*
+    TODO (content to confirm with the farm before adding; not shown on the page):
+    - Price, or a price range / per-pound rate (currently "Inquire for pricing"
+      except quail eggs, "By the dozen"). With a price, the Offer can become a
+      Product with offers.price and qualify for rich results.
+    - Typical weights / sizes, and for lamb the actual cut list and what
+      "half" includes.
+    - When each seasonal batch is ready (months), and how far ahead to reserve.
+    - Packaging (fresh vs frozen, vacuum-sealed?), deposit or payment method.
+    - Feed and processing details, if the farm wants to state them.
+    - Pickup hours/location details beyond "on-farm pickup by appointment".
+  */}
+
+  <!-- BREADCRUMB -->
+  <nav aria-label="Breadcrumb" class="mx-auto max-w-page px-[18px] pt-10 md:px-8">
+    <ol class="flex flex-wrap items-center gap-2 text-[14px] text-ink-soft">
+      <li><a href="/">Home</a></li>
+      <li aria-hidden="true">/</li>
+      <li><a href="/products/">Products</a></li>
+      <li aria-hidden="true">/</li>
+      <li aria-current="page" class="text-ink-body">{product.name}</li>
+    </ol>
+  </nav>
+
+  <!-- PRODUCT -->
+  <section class="mx-auto max-w-page px-[18px] pt-10 pb-16 md:px-8">
+    <div class="grid grid-cols-2 items-start gap-7 max-md:grid-cols-1">
+      <Photo
+        image={photo}
+        alt={product.alt}
+        label={product.name}
+        aspect="4 / 3"
+        maxWidth={1440}
+        sizes={photoSizes}
+        eager
+      >
+        <span
+          class:list={[
+            "absolute top-3.5 left-3.5 rounded-full bg-bg/92 px-3 py-1.5 text-[12px] font-bold tracking-[0.04em] uppercase backdrop-blur-[6px]",
+            tagTone[product.tagTone],
+          ]}
+        >
+          {product.tag}
+        </span>
+      </Photo>
+
+      <div class="md:pt-4">
+        <p class:list={[eyebrow, "mb-5"]}>The farm stand · {site.location}</p>
+        <h1
+          class="font-display text-[clamp(40px,6vw,64px)] leading-[1.05] font-normal tracking-[-0.02em] text-ink"
+        >
+          {product.name}
+        </h1>
+        <p class="mt-6 text-[19px] leading-[1.6] text-ink-body">
+          {product.description}
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <Button href={reserveMailto(product.name)}>Reserve {product.name}</Button>
+          <span class="text-[15px] font-semibold text-ink-body">{product.price}</span>
+        </div>
+        <p class="mt-[18px] text-[15px] text-ink-soft">
+          or write to <a href={reserveMailto(product.name)}>{site.email}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW ORDERING WORKS -->
+  <section class="border-y border-line bg-tint">
+    <div
+      class="mx-auto grid max-w-page grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-10 px-[18px] py-16 md:px-8"
+    >
+      <div>
+        <h2 class="mb-2.5 font-display text-[22px] font-medium text-ink">
+          Reserve by email
+        </h2>
+        <p class="text-[16px] leading-[1.6] text-ink-soft">
+          Let us know what you'd like, how much, and roughly when you need it —
+          we'll reply with availability and a pickup time.
+        </p>
+      </div>
+      <div>
+        <h2 class="mb-2.5 font-display text-[22px] font-medium text-ink">
+          Pickup on the farm
+        </h2>
+        <p class="text-[16px] leading-[1.6] text-ink-soft">
+          On-farm pickup by appointment in {site.location}. We'll coordinate a
+          time when you order.
+        </p>
+      </div>
+      <div>
+        <h2 class="mb-2.5 font-display text-[22px] font-medium text-ink">
+          {seasonal ? "Raised in batches" : "Ask what's in stock"}
+        </h2>
+        <p class="text-[16px] leading-[1.6] text-ink-soft">
+          {
+            seasonal
+              ? "Availability shifts with the seasons. Send us a note and we'll tell you exactly what's available and when."
+              : "Not sure what's in stock right now? Send us a note and we'll tell you exactly what's available."
+          }
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE FROM THE FARM -->
+  <section class="mx-auto max-w-page px-[18px] py-20 md:px-8">
+    <div class="mb-9 flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <p class:list={[eyebrow, "mb-5"]}>From our farm</p>
+        <h2
+          class="font-display text-[clamp(28px,4vw,44px)] leading-[1.15] font-normal tracking-[-0.015em] text-ink"
+        >
+          More from the hill
+        </h2>
+      </div>
+      <a href="/products/" class="text-[15px] font-semibold">← All products</a>
+    </div>
+    <ul class="grid grid-cols-3 gap-6 max-md:grid-cols-1">
+      {
+        others.map((other) => (
+          <li>
+            <a
+              href={productPath(other)}
+              class="block h-full overflow-hidden rounded-panel border border-line bg-bg transition-colors hover:border-line-hover"
+            >
+              <Photo
+                image={productByFile.get(other.file) ?? null}
+                alt={other.alt}
+                label={other.name}
+                aspect="4 / 3"
+                radius="0"
+                maxWidth={1056}
+                sizes={otherSizes}
+              />
+              <div class="px-6 pt-[22px] pb-[26px]">
+                <h3 class="font-display text-[22px] font-medium text-ink">
+                  {other.name}
+                </h3>
+                <p class="mt-2 text-[15px] leading-[1.5] text-ink-soft">
+                  {other.teaser}
+                </p>
+                <p class="mt-4 text-[14px] font-semibold text-berry">
+                  {other.teaserPrice}
+                </p>
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

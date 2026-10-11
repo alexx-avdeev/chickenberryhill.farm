@@ -82,6 +82,10 @@ for (const product of products) {
       {
         products.map((product, i) => (
           <li class="flex flex-col overflow-hidden rounded-card border border-line bg-bg">
+            {/* The photo and the name link to the product's own page; the
+                Reserve button stays a mailto, so the card itself can't be
+                one big link. */}
+            <a href={`/products/${product.slug}/`} class="block" tabindex="-1" aria-hidden="true">
             <Photo
               image={productByFile.get(product.file) ?? null}
               alt={product.alt}
@@ -102,9 +106,12 @@ for (const product of products) {
                 {product.tag}
               </span>
             </Photo>
+            </a>
             <div class="flex flex-1 flex-col px-[26px] pt-[26px] pb-7">
               <h2 class="font-display text-[26px] font-medium text-ink">
-                {product.name}
+                <a href={`/products/${product.slug}/`} class="text-ink hover:text-green">
+                  {product.name}
+                </a>
               </h2>
               <p class="mt-2.5 flex-1 text-[16px] leading-[1.6] text-ink-soft">
                 {product.description}
@@ -113,9 +120,14 @@ for (const product of products) {
                 <span class="text-[15px] font-semibold text-ink-body">
                   {product.price}
                 </span>
-                <Button href={reserveMailto(product.name)} small>
-                  Reserve
-                </Button>
+                <div class="flex items-center gap-4">
+                  <a href={`/products/${product.slug}/`} class="text-[14px] font-semibold">
+                    Details →
+                  </a>
+                  <Button href={reserveMailto(product.name)} small>
+                    Reserve
+                  </Button>
+                </div>
               </div>
             </div>
           </li>

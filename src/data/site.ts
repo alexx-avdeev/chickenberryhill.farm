@@ -16,7 +16,13 @@ export const site = {
   /** GA4 measurement ID. Public by design — it is written into every page. */
   gaMeasurementId: "G-X26K0SZLYH",
   description:
-    "Small family farm in Hartsville, Tennessee selling pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs. On-farm pickup by appointment.",
+    "Small family farm in Hartsville, Tennessee selling pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs. Pickup in Hartsville or Gallatin.",
+  /**
+   * Where orders can be picked up: on the farm, or in Gallatin. Both are by
+   * appointment and arranged over email; there's no published Gallatin
+   * address, day, or time, so the copy never states one.
+   */
+  pickupTowns: ["Hartsville", "Gallatin"],
 } as const;
 
 export const navLinks = [
@@ -101,8 +107,13 @@ export const animals = [
 ] as const;
 
 export type Product = {
+  /** URL segment: the product's page is /products/<slug>/. */
   slug: string;
   name: string;
+  /** <title> for the product page (~60 chars: product + place + brand). */
+  seoTitle: string;
+  /** Meta description for the product page (~150 chars). */
+  seoDescription: string;
   /** Short blurb for the home page card. */
   teaser: string;
   /** Longer blurb for the products page card. */
@@ -118,8 +129,8 @@ export type Product = {
 };
 
 /**
- * What's for sale. Shown on the home page, the products page, and as reserve
- * links on the contact page.
+ * What's for sale. Shown on the home page, the products page, each product's
+ * own page (/products/<slug>/), and as reserve links on the contact page.
  *
  * `file` is looked for in `src/assets/products/`. A missing file renders the
  * named placeholder instead.
@@ -127,6 +138,9 @@ export type Product = {
 export const products: Product[] = [
   {
     slug: "pasture-chicken",
+    seoTitle: "Pasture-Raised Chicken in Hartsville, TN — ChickenBerry Hill",
+    seoDescription:
+      "Pasture-raised whole chickens from a family farm in Hartsville, TN: open pasture, clean feed, sold fresh in batches. Pickup in Hartsville or Gallatin.",
     name: "Pasture Chicken",
     teaser: "Whole birds raised on open pasture — clean, tender, and honest.",
     description:
@@ -140,6 +154,9 @@ export const products: Product[] = [
   },
   {
     slug: "lamb",
+    seoTitle: "Grass-Fed Lamb in Hartsville, TN — ChickenBerry Hill Farm",
+    seoDescription:
+      "Grass-fed lamb from our own flock in Hartsville, Tennessee, available whole, half, or by the cut. Batches are limited, so reserve early by email.",
     name: "Lamb",
     teaser: "Grass-fed lamb from our own flock. Whole, half, and cuts.",
     description:
@@ -153,6 +170,9 @@ export const products: Product[] = [
   },
   {
     slug: "rabbit",
+    seoTitle: "Whole Rabbit in Hartsville, TN — ChickenBerry Hill Farm",
+    seoDescription:
+      "Whole rabbits raised in our own hutches in Hartsville, Tennessee. Mild, lean, and nothing added. Sold fresh in small batches; reserve ahead by email.",
     name: "Rabbit",
     teaser: "Whole rabbits from our own hutches — mild, lean, and raised in small batches.",
     description:
@@ -166,6 +186,9 @@ export const products: Product[] = [
   },
   {
     slug: "quail-eggs",
+    seoTitle: "Fresh Quail Eggs in Hartsville, TN — ChickenBerry Hill Farm",
+    seoDescription:
+      "Speckled quail eggs gathered fresh each morning in Hartsville, Tennessee, sold by the dozen. Pickup by appointment in Hartsville or Gallatin.",
     name: "Quail Eggs",
     teaser: "Delicate, speckled quail eggs collected fresh each morning.",
     description:

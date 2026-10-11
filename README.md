@@ -47,8 +47,11 @@ Type is Newsreader (display) and Manrope (UI), loaded from Google Fonts in
 
 ## Deploy
 
-Fully static — `dist/` is served by Cloudflare Workers Static Assets, with no
-Worker script in front of it (`wrangler.jsonc` has no `main`).
+Fully static — `dist/` is served by Cloudflare Workers Static Assets, with a
+thin Worker script in front of it (`worker/index.ts`) that does the www → apex
+redirect and sets browser cache headers: `/_astro/*` (content-hashed) is cached
+for a year as immutable, `/og/*` and the favicon for a day, and HTML keeps the
+default revalidate-every-time policy.
 
 ```bash
 npm run deploy

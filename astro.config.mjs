@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, fontProviders } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
@@ -23,6 +23,45 @@ export default defineConfig({
     sitemap({
       filter: (page) => !/\/404\/?$/.test(new URL(page).pathname),
     }),
+  ],
+
+  // Self-hosted fonts (see src/assets/fonts/README.md). Astro copies them to
+  // /_astro/fonts/ (cached as immutable by worker/index.ts), writes the
+  // @font-face rules, and generates metric-matched fallbacks so the swap from
+  // the fallback font to the web font doesn't shift the layout.
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: "Manrope",
+      cssVariable: "--font-manrope",
+      fallbacks: ["system-ui", "-apple-system", "sans-serif"],
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/manrope-latin-wght-400-700.woff2"],
+            weight: "400 700",
+            style: "normal",
+            display: "swap",
+          },
+        ],
+      },
+    },
+    {
+      provider: fontProviders.local(),
+      name: "Newsreader",
+      cssVariable: "--font-newsreader",
+      fallbacks: ["Georgia", "serif"],
+      options: {
+        variants: [
+          {
+            src: ["./src/assets/fonts/newsreader-latin-opsz-6-72-wght-400-500.woff2"],
+            weight: "400 500",
+            style: "normal",
+            display: "swap",
+          },
+        ],
+      },
+    },
   ],
 
   vite: {

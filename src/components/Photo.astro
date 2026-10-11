@@ -106,7 +106,10 @@ if (src && !resolvedSrc) {
 //
 // Never upscale past the source, and don't bother with widths above what the
 // 1120px shell can show on a 2x screen.
-const candidateWidths = [480, 768, 1056, 1440, 1600, 2112];
+// 160/320 cover the ~160px home animal tiles at 1x/2x (480 was the smallest
+// step, so a desktop tile downloaded 3x its pixels). 640 covers the ~514px
+// product cards at 1x (was 768).
+const candidateWidths = [160, 320, 480, 640, 768, 1056, 1440, 1600, 2112];
 const ceiling = image ? Math.min(image.width, maxWidth) : 0;
 const widths = image
   ? candidateWidths.filter((w) => w <= ceiling).concat(ceiling)

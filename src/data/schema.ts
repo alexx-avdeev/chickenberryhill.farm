@@ -13,6 +13,8 @@
  * hours. `additionalType` points at Wikidata's "farm" (Q131596) to say what
  * kind of business this is without misusing a type.
  *
+ * `areaServed` lists the two pickup towns (Hartsville, Gallatin).
+ *
  * Deliberately left out until there are real values for them: street
  * address, postal code, phone, opening hours, geo coordinates, prices,
  * ratings, and a raster logo. Search engines prefer missing fields over
@@ -30,6 +32,13 @@ export const ids = {
 } as const;
 
 const abs = (path: string) => new URL(path, origin).toString();
+
+/** The pickup towns, as schema.org Cities in Tennessee. */
+const areaServed = site.pickupTowns.map((name) => ({
+  "@type": "City",
+  name,
+  containedInPlace: { "@type": "State", name: "Tennessee" },
+}));
 
 /** Sitewide: the website itself. */
 export const websiteNode: JsonLdNode = {
@@ -72,6 +81,7 @@ export function localBusinessNode(imageUrl?: string): JsonLdNode {
       addressRegion: "TN",
       addressCountry: "US",
     },
+    areaServed,
     hasOfferCatalog: { "@id": abs("/products/#catalog") },
   };
 }
@@ -103,6 +113,7 @@ export function offerNode(product: Product, imageUrl?: string): JsonLdNode {
     description: product.description,
     url: abs(productPath(product)),
     ...(imageUrl ? { image: imageUrl } : {}),
+    areaServed,
     offeredBy: { "@id": ids.organization },
   };
 }

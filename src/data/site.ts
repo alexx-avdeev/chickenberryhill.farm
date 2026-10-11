@@ -16,7 +16,13 @@ export const site = {
   /** GA4 measurement ID. Public by design — it is written into every page. */
   gaMeasurementId: "G-X26K0SZLYH",
   description:
-    "Small family farm in Hartsville, Tennessee selling pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs. On-farm pickup by appointment.",
+    "Small family farm in Hartsville, Tennessee selling pasture-raised chicken, grass-fed lamb, rabbit, and fresh quail eggs. Pickup in Hartsville or Gallatin.",
+  /**
+   * Where orders can be picked up: on the farm, or in Gallatin. Both are by
+   * appointment and arranged over email; there's no published Gallatin
+   * address, day, or time, so the copy never states one.
+   */
+  pickupTowns: ["Hartsville", "Gallatin"],
 } as const;
 
 export const navLinks = [
@@ -134,7 +140,7 @@ export const products: Product[] = [
     slug: "pasture-chicken",
     seoTitle: "Pasture-Raised Chicken in Hartsville, TN — ChickenBerry Hill",
     seoDescription:
-      "Pasture-raised whole chickens from a family farm in Hartsville, TN: open pasture, clean feed, sold fresh in batches. Reserve by email for on-farm pickup.",
+      "Pasture-raised whole chickens from a family farm in Hartsville, TN: open pasture, clean feed, sold fresh in batches. Pickup in Hartsville or Gallatin.",
     name: "Pasture Chicken",
     teaser: "Whole birds raised on open pasture — clean, tender, and honest.",
     description:
@@ -182,7 +188,7 @@ export const products: Product[] = [
     slug: "quail-eggs",
     seoTitle: "Fresh Quail Eggs in Hartsville, TN — ChickenBerry Hill Farm",
     seoDescription:
-      "Speckled quail eggs gathered fresh each morning in Hartsville, Tennessee and sold by the dozen. Email us to order; on-farm pickup by appointment.",
+      "Speckled quail eggs gathered fresh each morning in Hartsville, Tennessee, sold by the dozen. Pickup by appointment in Hartsville or Gallatin.",
     name: "Quail Eggs",
     teaser: "Delicate, speckled quail eggs collected fresh each morning.",
     description:

@@ -23,15 +23,31 @@ interface Props {
   jsonLd?: JsonLdNode | JsonLdNode[];
   /** Leave out the sitewide graph and breadcrumbs (the 404 page). */
   noJsonLd?: boolean;
+  /**
+   * Share image for this page. Defaults to the sitewide 1200x630 card in
+   * public/og/. A root-relative path is resolved against `site`; pass a
+   * JPEG at 1200x630 so the width, height and type below stay true.
+   */
+  ogImage?: { src: string; alt: string; width?: number; height?: number; type?: string };
 }
 
-const { title, description = site.description, jsonLd, noJsonLd = false } = Astro.props;
+const defaultOgImage = {
+  src: "/og/default.jpg",
+  alt: "ChickenBerry Hill Farm, Hartsville, Tennessee: the herd and flock grazing an open green pasture below a wooded hillside.",
+  width: 1200,
+  height: 630,
+  type: "image/jpeg",
+};
+
+const { title, description = site.description, jsonLd, noJsonLd = false, ogImage } = Astro.props;
 // A title that already names the farm is used as written (the keyword-rich
 // titles on the main pages); anything else gets the brand appended.
 const pageTitle = title.includes(site.shortName)
   ? title
   : `${title} — ${site.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = { ...defaultOgImage, ...ogImage };
+const ogImageUrl = new URL(og.src, Astro.site).toString();
 
 const pageNodes = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 const overridden = new Set(pageNodes.map((node) => node["@id"]).filter(Boolean));
@@ -65,7 +81,18 @@ const jsonLdText = graph.length
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content={og.type} />
+    <meta property="og:image:width" content={String(og.width)} />
+    <meta property="og:image:height" content={String(og.height)} />
+    <meta property="og:image:alt" content={og.alt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={og.alt} />
 
     {jsonLdText && <script is:inline type="application/ld+json" set:html={jsonLdText} />}
 
